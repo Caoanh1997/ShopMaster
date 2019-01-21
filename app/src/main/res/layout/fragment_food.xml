@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FragmentComponent.FoodFragment"
+    android:orientation="vertical"
+    android:background="@color/yellow">
+    <ProgressBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:id="@+id/progress"/>
+
+    <TextView
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        android:textSize="25sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Food"
+        android:id="@+id/tv"/>
+
+    <GridView
+        android:layout_below="@+id/tv"
+        android:verticalSpacing="2dp"
+        android:horizontalSpacing="2dp"
+    android:id="@+id/gv"
+    android:numColumns="3"
+    android:layout_margin="10dp"
+    android:layout_width="match_parent"
+    android:layout_height="250dp">
+    </GridView>
+    <Button
+    android:textSize="25sp"
+    android:layout_centerHorizontal="true"
+    android:text="Size list"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/btsize"
+    android:layout_below="@+id/gv"/>
+
+
+</RelativeLayout>

@@ -1,0 +1,61 @@
+<resources>
+    <string name="app_name">ShopMaster</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string-array name="tinh">
+        <item>Tỉnh/thành phố</item>
+        <item>Đà Nẵng</item>
+        <item>Quảng Nam</item>
+    </string-array>
+    <string-array name="huyenDN">
+        <item>Quận/huyện</item>
+        <item>Thanh Khê</item>
+        <item>Hải Châu</item>
+        <item>Liên Chiểu</item>
+    </string-array>
+    <string-array name="xaDN1">
+        <item>Xã/phường</item>
+        <item>Hòa Khê</item>
+        <item>An Khê</item>
+        <item>Vĩnh Trung</item>
+    </string-array>
+    <string-array name="xaDN2">
+        <item>Xã/phường</item>
+        <item>Hải Châu 1</item>
+        <item>Hải Châu 2</item>
+        <item>Hòa Cường Bắc</item>
+        <item>Hòa Cường Nam</item>
+        <item>Thuận Phước</item>
+    </string-array>
+    <string-array name="xaDN3">
+        <item>Xã/phường</item>
+        <item>Hòa Khánh Nam</item>
+        <item>Hòa Khánh Bắc</item>
+        <item>Hòa Minh</item>
+    </string-array>
+    <string-array name="huyenQN">
+        <item>Quận/huyện</item>
+        <item>Điện Bàn</item>
+        <item>Đại Lộc</item>
+        <item>Duy Xuyên</item>
+    </string-array>
+    <string-array name="xaQN1">
+        <item>Xã/phường</item>
+        <item>Điện Phước</item>
+        <item>Điện Hồng</item>
+        <item>Điện Thọ</item>
+    </string-array>
+    <string-array name="xaQN2">
+        <item>Xã/phường</item>
+        <item>Đại An</item>
+        <item>Đại Cường</item>
+        <item>Đại Đồng</item>
+    </string-array>
+    <string-array name="xaQN3">
+        <item>Xã/phường</item>
+        <item>Duy Châu</item>
+        <item>Duy Hải</item>
+        <item>Duy Hòa</item>
+    </string-array>
+</resources>
