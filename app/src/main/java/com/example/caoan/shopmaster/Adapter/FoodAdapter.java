@@ -24,10 +24,12 @@ import java.util.List;
 
 public class FoodAdapter extends ArrayAdapter<Food> {
     private List<Food> foodList;
+    private Context context;
 
     public FoodAdapter(@NonNull Context context, @NonNull List<Food> objects) {
         super(context, 0, objects);
         foodList = new ArrayList<>(objects);
+        this.context = context;
         notifyDataSetChanged();
     }
 

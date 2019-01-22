@@ -10,6 +10,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -47,8 +48,8 @@ public class AddShopActivity extends AppCompatActivity {
     private static int PICK_IMAGE_REQUEST=71;
     private Uri filePath;
     private String namefileimage;
-    private String url="";
-    private String urlImage="";
+    private String url;
+    private String urlImage;
 
     private FirebaseStorage firebaseStorage;
     private StorageReference storageReference;
@@ -57,7 +58,8 @@ public class AddShopActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private Store store;
-    private ProgressDialog progressDialog;
+    private ProgressDialog progressDialog,progress;
+    private int i=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,10 +177,11 @@ public class AddShopActivity extends AppCompatActivity {
                 if(checkInput(etnamestore) && checkInput(etphone)){
                     uploadImageStore();
                     progressDialog = new ProgressDialog(AddShopActivity.this);
-                    progressDialog.setMessage("Uploading...");
-                    progressDialog.setIndeterminate(false);
-                    progressDialog.setProgress(0);
+                    progressDialog.setMessage("Image is Uploading....");
+                    progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
                     progressDialog.setMax(100);
+                    progressDialog.setProgress(0);
+                    progressDialog.show();
                     new ProgressProcess().execute();
                 }else {
                     return;
@@ -186,6 +189,10 @@ public class AddShopActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    public String getlink(){
+        return urlImage;
     }
 
     private void UploadStore(String urlImage) {
@@ -275,9 +282,6 @@ public class AddShopActivity extends AppCompatActivity {
         protected String doInBackground(Void... voids) {
             for (int i=1;i<=100;i++){
                 publishProgress(i);
-                if(i==50){
-                    urlImage = getUrlImage();
-                }
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
@@ -289,14 +293,41 @@ public class AddShopActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String s) {
+            urlImage = getUrlImage();
             progressDialog.dismiss();
-            UploadStore(urlImage);
-            Toast.makeText(getApplicationContext(),"Upload Store success",Toast.LENGTH_SHORT).show();
+
+            progress = new ProgressDialog(AddShopActivity.this);
+            progress.setMax(100);
+            progress.setProgress(0);
+            progress.setMessage("Store Uploading...");
+            progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            progress.show();
+            Runnable runnable = new ProcessUploadStore();
+            new Thread(runnable).start();
         }
 
         @Override
         protected void onProgressUpdate(Integer... values) {
-            //progressDialog.setProgress(values[0]);
+            progressDialog.setProgress(values[0]);
         }
     }
+    class ProcessUploadStore implements Runnable{
+
+        @Override
+        public void run() {
+            while (i<100){
+                i++;
+                progress.setProgress(i);
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            UploadStore(getUrlImage());
+            progress.dismiss();
+        }
+    }
+
+
 }

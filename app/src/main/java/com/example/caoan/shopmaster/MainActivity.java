@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 
 import com.example.caoan.shopmaster.Adapter.StoreAdapter;
 import com.example.caoan.shopmaster.Model.Store;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -46,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         lvstore = findViewById(R.id.lvstore);
         progressBar = findViewById(R.id.progressbar);
         lvstore.setVisibility(View.INVISIBLE);
+        registerForContextMenu(lvstore);
 
         firebaseAuth = FirebaseAuth.getInstance();
         storeList = new ArrayList<>();
@@ -83,6 +86,14 @@ public class MainActivity extends AppCompatActivity {
                 editor.putString("key",key_store);
                 editor.commit();
                 startActivity(new Intent(MainActivity.this,ProductActivity.class));
+            }
+        });
+
+        lvstore.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                lvstore.setTag(i);
+                return false;
             }
         });
     }
@@ -154,5 +165,38 @@ public class MainActivity extends AppCompatActivity {
     }
     public void addStore(){
 
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+//        super.onCreateContextMenu(menu, v, menuInfo);
+        getMenuInflater().inflate(R.menu.context_menu,menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.edit:
+                Toast.makeText(getApplicationContext(),"Edit",Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.delete:
+                int i = (int) lvstore.getTag();
+                String key = storeList.get(i).getKey();
+                System.out.println(key);
+                DeleteStore(key);
+                //DeleteStore(String key);
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
+    public void DeleteStore(String key){
+        DatabaseReference reference = firebaseDatabase.getReference("Store");
+        reference.child(key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                System.out.println("Delete store success");
+            }
+        });
     }
 }
