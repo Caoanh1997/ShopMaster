@@ -153,5 +153,4 @@ public class FoodFragment extends Fragment {
             return "Offline";
         }
     }
-
 }

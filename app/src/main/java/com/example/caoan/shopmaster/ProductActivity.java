@@ -93,4 +93,9 @@ public class ProductActivity extends AppCompatActivity {
                     }
                 }));
     }
+
+    @Override
+    public void onBackPressed() {
+        onBackPressed();
+    }
 }
