@@ -21,9 +21,15 @@
         android:layout_height="wrap_content"
         android:text="Food"
         android:id="@+id/tv"/>
+    <Button
+        android:layout_below="@+id/tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add product"
+        android:id="@+id/btnaddfood"/>
 
     <GridView
-        android:layout_below="@+id/tv"
+        android:layout_below="@+id/btnaddfood"
         android:verticalSpacing="2dp"
         android:horizontalSpacing="2dp"
     android:id="@+id/gv"

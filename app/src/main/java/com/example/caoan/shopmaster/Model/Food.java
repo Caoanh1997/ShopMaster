@@ -1,12 +1,21 @@
 package com.example.caoan.shopmaster.Model;
 
 public class Food {
+    private String key;
     private String name;
     private String description;
     private String urlimage;
     private int price;
 
     public Food(String name, String description, String urlimage, int price) {
+        this.name = name;
+        this.description = description;
+        this.urlimage = urlimage;
+        this.price = price;
+    }
+
+    public Food(String key, String name, String description, String urlimage, int price) {
+        this.key = key;
         this.name = name;
         this.description = description;
         this.urlimage = urlimage;
@@ -45,10 +54,19 @@ public class Food {
         this.price = price;
     }
 
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
     @Override
     public String toString() {
         return "Food{" +
-                "name='" + name + '\'' +
+                "key='" + key + '\'' +
+                ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", urlimage='" + urlimage + '\'' +
                 ", price=" + price +

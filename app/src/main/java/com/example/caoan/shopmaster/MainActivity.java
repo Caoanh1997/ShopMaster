@@ -163,9 +163,6 @@ public class MainActivity extends AppCompatActivity {
             return "Done";
         }
     }
-    public void addStore(){
-
-    }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {

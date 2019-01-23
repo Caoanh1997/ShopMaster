@@ -1,14 +1,18 @@
 package com.example.caoan.shopmaster.FragmentComponent;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ProgressBar;
@@ -16,8 +20,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.caoan.shopmaster.Adapter.FoodAdapter;
+import com.example.caoan.shopmaster.AddFoodActivity;
 import com.example.caoan.shopmaster.Model.Food;
 import com.example.caoan.shopmaster.R;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -34,12 +40,13 @@ public class FoodFragment extends Fragment {
     private View view;
     private TextView tv;
     private GridView gridView;
-    private Button button;
+    private Button button, btnaddfood;
     private List<Food> foodList;
     private FoodAdapter adapter;
     private ProgressBar progressBar;
     private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth firebaseAuth;
+    private String key;
 
     public FoodFragment() {
         // Required empty public constructor
@@ -68,10 +75,11 @@ public class FoodFragment extends Fragment {
         tv = view.findViewById(R.id.tv);
         gridView = view.findViewById(R.id.gv);
         button = view.findViewById(R.id.btsize);
+        btnaddfood = view.findViewById(R.id.btnaddfood);
         progressBar = view.findViewById(R.id.progress);
 
         Bundle bundle = getArguments();
-        String key = bundle.getString("s");
+        key = bundle.getString("s");
         tv.setText(key);
         gridView.setVisibility(View.INVISIBLE);
 
@@ -82,7 +90,7 @@ public class FoodFragment extends Fragment {
                 .child("Food");
         /*for(int i=0;i<5;i++){
             String foodID = reference.push().getKey();
-            Food food = new Food("Chuoi "+i, "This is banana", "https://cdn1.woolworths.media/content/wowproductimages/medium/306510.jpg", 10000);
+            Food food = new Food(foodID,"Chuoi "+i, "This is banana", "https://cdn1.woolworths.media/content/wowproductimages/medium/306510.jpg", 10000);
 
             reference.child(foodID).setValue(food);
         }*/
@@ -108,6 +116,52 @@ public class FoodFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Toast.makeText(getContext(),isOnline()+" "+String.valueOf(foodList.size()),Toast.LENGTH_SHORT).show();
+            }
+        });
+        gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                final String key_food = ((Food) adapterView.getItemAtPosition(i)).getKey();
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("Choose action");
+                view = getLayoutInflater().inflate(R.layout.product_action_layout,null);
+                builder.setView(view);
+                final AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+
+                Button btnedit, btndelete;
+                btnedit = view.findViewById(R.id.btnedit);
+                btndelete = view.findViewById(R.id.btndelete);
+
+                btndelete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        DatabaseReference reference = firebaseDatabase.getReference("Product").child(key)
+                                .child("Food");
+
+                        reference.child(key_food).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                System.out.println("Delete food success");
+                                alertDialog.dismiss();
+                            }
+                        });
+                    }
+                });
+                return false;
+            }
+        });
+        btnaddfood.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getActivity(), AddFoodActivity.class));
+            }
+        });
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Food food = (Food) adapterView.getItemAtPosition(i);
+                Toast.makeText(getContext(),food.toString(),Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -152,5 +206,11 @@ public class FoodFragment extends Fragment {
         }else {
             return "Offline";
         }
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+//        super.onCreateContextMenu(menu, v, menuInfo);
+        getActivity().getMenuInflater().inflate(R.menu.context_menu,menu);
     }
 }

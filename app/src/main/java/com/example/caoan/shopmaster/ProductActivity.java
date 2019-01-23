@@ -62,8 +62,8 @@ public class ProductActivity extends AppCompatActivity {
 
     private void fillFragment() {
         fragmentList = new ArrayList<Fragment>();
-        SharedPreferences sharedPreferences = getSharedPreferences("key_store", Context.MODE_PRIVATE);
-        String key = sharedPreferences.getString("key","");
+
+        String key = getKey_Store();
 
         FoodFragment foodFragment = new FoodFragment().newInstance(key);
         FoodFragment foodFragment1 = new FoodFragment().newInstance(key);
@@ -97,5 +97,12 @@ public class ProductActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         onBackPressed();
+    }
+    public String getKey_Store(){
+        String key;
+        SharedPreferences sharedPreferences = getSharedPreferences("key_store", Context.MODE_PRIVATE);
+        key = sharedPreferences.getString("key","");
+
+        return key;
     }
 }
