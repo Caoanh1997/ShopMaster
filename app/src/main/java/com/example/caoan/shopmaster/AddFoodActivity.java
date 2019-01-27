@@ -220,7 +220,13 @@ public class AddFoodActivity extends AppCompatActivity {
         String price_str = String.valueOf(etprice.getText());
         int price = Integer.parseInt(price_str);
         String key_food = databaseReference.push().getKey();
-        databaseReference.child(key_food).setValue(new Food(key_food,namefood,description,getUrlImage(),price));
+        databaseReference.child(key_food).setValue(new Food(key_food,namefood,description,getUrlImage(),price)).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                System.out.println("Upload food success");
+            }
+        });
+
     }
 
     public String getUrlImage() {

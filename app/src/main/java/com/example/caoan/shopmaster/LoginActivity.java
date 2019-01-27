@@ -64,7 +64,7 @@ public class LoginActivity extends AppCompatActivity {
                                 tvuserid.setText(user.getUid());
                                 try {
                                     Thread.sleep(3000);
-                                    startActivity(new Intent(LoginActivity.this,MainActivity.class));
+                                    startActivity(new Intent(LoginActivity.this,ShopActivity.class));
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
                                 }
@@ -106,7 +106,7 @@ public class LoginActivity extends AppCompatActivity {
             tvuserid.setText(user.getUid()+",verity: "+user.isEmailVerified());
             try {
                 Thread.sleep(3000);
-                startActivity(new Intent(LoginActivity.this,MainActivity.class));
+                startActivity(new Intent(LoginActivity.this,ShopActivity.class));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

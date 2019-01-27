@@ -58,4 +58,6 @@
         <item>Duy Hải</item>
         <item>Duy Hòa</item>
     </string-array>
+    <string name="title_activity_add_food_example">AddFoodExample</string>
+    <string name="title_activity_shop">ShopActivity</string>
 </resources>

@@ -4,21 +4,25 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.caoan.shopmaster.Adapter.StoreAdapter;
 import com.example.caoan.shopmaster.Model.Store;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -27,25 +31,40 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class ShopActivity extends AppCompatActivity {
 
     private FirebaseAuth firebaseAuth;
     private TextView tvuserid;
     private ListView lvstore;
     private List<Store> storeList;
     private FirebaseDatabase firebaseDatabase;
+    private FirebaseStorage firebaseStorage;
     private ProgressBar progressBar;
     private StoreAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_shop);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+                startActivity(new Intent(ShopActivity.this, AddShopActivity.class));
+            }
+        });
+
         tvuserid = findViewById(R.id.tvuserid);
         lvstore = findViewById(R.id.lvstore);
         progressBar = findViewById(R.id.progressbar);
@@ -53,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
         registerForContextMenu(lvstore);
 
         firebaseAuth = FirebaseAuth.getInstance();
+        firebaseStorage = FirebaseStorage.getInstance();
         storeList = new ArrayList<>();
         final FirebaseUser user = firebaseAuth.getCurrentUser();
         if(user != null){
@@ -87,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString("key",key_store);
                 editor.commit();
-                startActivity(new Intent(MainActivity.this,ProductActivity.class));
+                startActivity(new Intent(ShopActivity.this,ProductActivity.class));
             }
         });
 
@@ -112,12 +132,12 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()){
             case R.id.add:
                 Toast.makeText(getApplicationContext(),"Add",Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(MainActivity.this, AddShopActivity.class));
+                startActivity(new Intent(ShopActivity.this, AddShopActivity.class));
                 return true;
             case R.id.logout:
                 firebaseAuth.signOut();
                 Toast.makeText(getApplicationContext(),"Sign out ok",Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                startActivity(new Intent(ShopActivity.this, LoginActivity.class));
                 return true;
             case R.id.about:
                 Toast.makeText(getApplicationContext(),"About",Toast.LENGTH_SHORT).show();
@@ -142,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
             //super.onPostExecute(s);
             progressBar.setVisibility(View.GONE);
             lvstore.setVisibility(View.VISIBLE);
-            adapter = new StoreAdapter(MainActivity.this,storeList);
+            adapter = new StoreAdapter(ShopActivity.this,storeList);
             lvstore.setAdapter(adapter);
         }
 
@@ -177,22 +197,25 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()){
             case R.id.edit:
                 Store store = storeList.get((Integer) lvstore.getTag());
-                Intent intent = new Intent(MainActivity.this, EditShopActivity.class);
+                Intent intent = new Intent(ShopActivity.this, EditShopActivity.class);
                 intent.putExtra("store", store);
                 startActivity(intent);
                 return true;
             case R.id.delete:
                 int i = (int) lvstore.getTag();
                 String key = storeList.get(i).getKey();
+                String urlimage = storeList.get(i).getUrlImage();
                 System.out.println(key);
-                DeleteStore(key);
+                DeleteStore(key,urlimage);
                 //DeleteStore(String key);
+                finish();
+                startActivity(getIntent());
                 return true;
             default:
                 return super.onContextItemSelected(item);
         }
     }
-    public void DeleteStore(String key){
+    public void DeleteStore(String key, String urlimage){
         DatabaseReference reference = firebaseDatabase.getReference("Store");
         reference.child(key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
@@ -200,5 +223,19 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println("Delete store success");
             }
         });
+
+        StorageReference storageReference = firebaseStorage.getReferenceFromUrl(urlimage);
+        storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                System.out.println("Delete image success");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                System.out.println("Delete image failed, "+e.getMessage());
+            }
+        });
+
     }
 }

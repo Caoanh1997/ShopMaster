@@ -6,6 +6,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.ContextMenu;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,6 +49,7 @@ public class FoodFragment extends Fragment {
     private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth firebaseAuth;
     private String key;
+    private FloatingActionButton fab;
 
     public FoodFragment() {
         // Required empty public constructor
@@ -77,6 +80,7 @@ public class FoodFragment extends Fragment {
         button = view.findViewById(R.id.btsize);
         btnaddfood = view.findViewById(R.id.btnaddfood);
         progressBar = view.findViewById(R.id.progress);
+        fab = view.findViewById(R.id.fab);
 
         Bundle bundle = getArguments();
         key = bundle.getString("s");
@@ -129,7 +133,7 @@ public class FoodFragment extends Fragment {
                 final AlertDialog alertDialog = builder.create();
                 alertDialog.show();
 
-                Button btnedit, btndelete;
+                FloatingActionButton btnedit, btndelete;
                 btnedit = view.findViewById(R.id.btnedit);
                 btndelete = view.findViewById(R.id.btndelete);
 
@@ -148,10 +152,25 @@ public class FoodFragment extends Fragment {
                         });
                     }
                 });
+                btnedit.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Toast.makeText(getContext(),"Edit",Toast.LENGTH_SHORT).show();
+                    }
+                });
                 return false;
             }
         });
         btnaddfood.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //startActivity(new Intent(getActivity(), AddFoodActivity.class));
+                PopupMenu popupMenu = new PopupMenu(getContext(),btnaddfood);
+                popupMenu.getMenuInflater().inflate(R.menu.context_menu,popupMenu.getMenu());
+                popupMenu.show();
+            }
+        });
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(getActivity(), AddFoodActivity.class));

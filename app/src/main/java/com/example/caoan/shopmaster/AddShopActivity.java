@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -61,6 +62,8 @@ public class AddShopActivity extends AppCompatActivity {
     private ProgressDialog progressDialog,progress;
     private int i=0;
 
+    private String key_store;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +86,7 @@ public class AddShopActivity extends AppCompatActivity {
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference("Store");
+        key_store = databaseReference.push().getKey();
 
         firebaseStorage = FirebaseStorage.getInstance();
         storageReference = firebaseStorage.getReference("Store");
@@ -174,7 +178,7 @@ public class AddShopActivity extends AppCompatActivity {
         btnsave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(checkInput(etnamestore) && checkInput(etphone)){
+                if(checkInput(etnamestore) && checkInput(etphone) && checkImage(filePath) && checkSpinner()){
                     uploadImageStore();
                     progressDialog = new ProgressDialog(AddShopActivity.this);
                     progressDialog.setMessage("Image is Uploading....");
@@ -191,12 +195,23 @@ public class AddShopActivity extends AppCompatActivity {
 
     }
 
+    public boolean checkSpinner(){
+        if(spinnertinh.getSelectedItem().toString().equals("Tỉnh/thành phố") || spinnerhuyen.getSelectedItem().toString().equals("Quận/huyện")
+                || spinnerxa.getSelectedItem().toString().equals("Xã/phường")){
+            Snackbar.make(spinnerxa,"Điền đầy đủ thông tin địa chỉ",Snackbar.LENGTH_LONG).setAction("Action",null)
+                    .show();
+            return false;
+        }else {
+            return true;
+        }
+    }
+
     public String getlink(){
         return urlImage;
     }
 
     private void UploadStore(String urlImage) {
-        String key_store = databaseReference.push().getKey();
+        //String key_store = databaseReference.push().getKey();
         String name = String.valueOf(etnamestore.getText());
         String duong = String.valueOf(etaddress.getText());
         String xa = String.valueOf(spinnerxa.getTag());
@@ -211,7 +226,7 @@ public class AddShopActivity extends AppCompatActivity {
     }
 
     private String getUrlImage() {
-        storageReference.child(namefileimage).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+        storageReference.child(key_store).child(namefileimage).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 url = uri.toString();
@@ -224,8 +239,7 @@ public class AddShopActivity extends AppCompatActivity {
     private void uploadImageStore() {
         if(filePath != null){
             namefileimage = UUID.randomUUID().toString();
-
-            storageReference.child(namefileimage).putFile(filePath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            storageReference.child(key_store).child(namefileimage).putFile(filePath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     System.out.println("Uploaded Image success");
@@ -270,6 +284,14 @@ public class AddShopActivity extends AppCompatActivity {
         String text = String.valueOf(editText.getText());
         if(text.isEmpty() || text == null || text.equals("")){
             editText.setError("Bạn phải điền thông tin này");
+            return false;
+        }else {
+            return true;
+        }
+    }
+    public boolean checkImage(Uri filePath){
+        if (filePath == null || filePath.toString().equals("")){
+            Snackbar.make(imagestore,"Bạn phải chọn ảnh",Snackbar.LENGTH_LONG).setAction("Action",null).show();
             return false;
         }else {
             return true;
@@ -325,6 +347,7 @@ public class AddShopActivity extends AppCompatActivity {
                 }
             }
             UploadStore(getUrlImage());
+            startActivity(new Intent(AddShopActivity.this, ShopActivity.class));
             progress.dismiss();
         }
     }
