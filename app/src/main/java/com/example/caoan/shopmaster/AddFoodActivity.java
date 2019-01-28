@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -93,7 +94,7 @@ public class AddFoodActivity extends AppCompatActivity {
         btnsave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(checkInput(etnamefood) && checkInput(etdescription) && checkInput(etprice)){
+                if(checkInput(etnamefood) && checkInput(etdescription) && checkInput(etprice) && checkImage(filePath)){
                     uploadImageFood();
                     progressUploadImage.show();
                     new ProgressUploadImage().execute();
@@ -226,7 +227,7 @@ public class AddFoodActivity extends AppCompatActivity {
                 System.out.println("Upload food success");
             }
         });
-
+        startActivity(new Intent(AddFoodActivity.this,ProductActivity.class));
     }
 
     public String getUrlImage() {
@@ -245,4 +246,13 @@ public class AddFoodActivity extends AppCompatActivity {
         });
         return urlImage;
     }
+    public boolean checkImage(Uri filePath){
+        if (filePath == null || filePath.toString().equals("")){
+            Snackbar.make(imagefood,"Bạn phải chọn ảnh",Snackbar.LENGTH_LONG).setAction("Action",null).show();
+            return false;
+        }else {
+            return true;
+        }
+    }
 }
+

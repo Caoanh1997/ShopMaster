@@ -224,6 +224,13 @@ public class ShopActivity extends AppCompatActivity {
             }
         });
 
+        DatabaseReference reference_product = firebaseDatabase.getReference("Product");
+        reference_product.child(key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                System.out.println("Delete product success");
+            }
+        });
         StorageReference storageReference = firebaseStorage.getReferenceFromUrl(urlimage);
         storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override

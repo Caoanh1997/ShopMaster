@@ -116,11 +116,13 @@ public class EditShopActivity extends AppCompatActivity {
 //                }
                 if(checkInput(etnamestore) && checkInput(etphone) && checkSpinner()){
                     if(filePath != null && filePath.toString() != store.getUrlImage()){
-                        System.out.println("Khac");
+                        System.out.println("image moi");
                         deleteOldImageStorage();
                         new ProcessDeleteImage().execute();
                     }else {
-                        System.out.println("Giong");
+                        System.out.println("image cu");
+                        uploadnewStore(store.getUrlImage());
+                        new ProcessUpdateStore().execute();
                     }
                 }
             }
@@ -188,6 +190,7 @@ public class EditShopActivity extends AppCompatActivity {
                         spinnertinh.setTag(tinh);
                         huyen = getResources().getStringArray(R.array.huyenDN);
                     }else {
+                        spinnertinh.setTag("Quảng Nam");
                         huyen = getResources().getStringArray(R.array.huyenQN);
                     }
                     spinnerhuyen.setAdapter(new ArrayAdapter(EditShopActivity.this,android.R.layout.simple_spinner_item,huyen));
@@ -373,6 +376,7 @@ public class EditShopActivity extends AppCompatActivity {
                 System.out.println("Upload Store failed");
             }
         });
+        startActivity(new Intent(EditShopActivity.this, ShopActivity.class));
     }
 
     class ProgressUploadStore extends AsyncTask<Void, Integer, Void>{
@@ -465,6 +469,46 @@ public class EditShopActivity extends AppCompatActivity {
             progressDialog.dismiss();
             uploadnewImageStore();
             new ProgressUploadImage().execute();
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            progressDialog.setProgress(values[0]);
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            for(int i=1;i<=100;i++){
+                publishProgress(i);
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        }
+    }
+
+    private class ProcessUpdateStore extends AsyncTask<Void, Integer,Void>{
+
+        private ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(EditShopActivity.this);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            progressDialog.setMessage("Updating store");
+            progressDialog.setProgress(0);
+            progressDialog.setMax(100);
+            progressDialog.show();
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            progressDialog.dismiss();
+            startActivity(new Intent(EditShopActivity.this,ShopActivity.class));
         }
 
         @Override
