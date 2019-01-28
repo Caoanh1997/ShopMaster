@@ -207,7 +207,6 @@ public class ShopActivity extends AppCompatActivity {
                 String urlimage = storeList.get(i).getUrlImage();
                 System.out.println(key);
                 DeleteStore(key,urlimage);
-                //DeleteStore(String key);
                 finish();
                 startActivity(getIntent());
                 return true;

@@ -107,7 +107,7 @@ public class AddFoodActivity extends AppCompatActivity {
         if(filePath != null){
             namefile = UUID.randomUUID().toString();
 
-            storageReference.child(namefile).putFile(filePath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            storageReference.child(getKey_Store()).child("Food").child(namefile).putFile(filePath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     System.out.println("Upload image food success");
@@ -231,7 +231,7 @@ public class AddFoodActivity extends AppCompatActivity {
     }
 
     public String getUrlImage() {
-        storageReference.child(namefile).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+        storageReference.child(getKey_Store()).child("Food").child(namefile).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 urlImage = uri.toString();
@@ -254,5 +254,6 @@ public class AddFoodActivity extends AppCompatActivity {
             return true;
         }
     }
+
 }
 

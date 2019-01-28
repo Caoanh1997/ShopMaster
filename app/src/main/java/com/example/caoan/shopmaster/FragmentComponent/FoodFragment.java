@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.example.caoan.shopmaster.Adapter.FoodAdapter;
 import com.example.caoan.shopmaster.AddFoodActivity;
 import com.example.caoan.shopmaster.Model.Food;
+import com.example.caoan.shopmaster.ProductActivity;
 import com.example.caoan.shopmaster.R;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,6 +34,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -125,6 +128,7 @@ public class FoodFragment extends Fragment {
         gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                final Food food = (Food) adapterView.getItemAtPosition(i);
                 final String key_food = ((Food) adapterView.getItemAtPosition(i)).getKey();
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle("Choose action");
@@ -147,7 +151,15 @@ public class FoodFragment extends Fragment {
                             @Override
                             public void onSuccess(Void aVoid) {
                                 System.out.println("Delete food success");
+                            }
+                        });
+                        StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(food.getUrlimage());
+                        storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                System.out.println("Delete Image Food success");
                                 alertDialog.dismiss();
+                                startActivity(new Intent(getActivity(), ProductActivity.class));
                             }
                         });
                     }
