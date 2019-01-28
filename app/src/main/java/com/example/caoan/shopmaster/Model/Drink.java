@@ -1,6 +1,8 @@
 package com.example.caoan.shopmaster.Model;
 
-public class Drink {
+import java.io.Serializable;
+
+public class Drink implements Serializable{
     private String key;
     private String name;
     private String description;

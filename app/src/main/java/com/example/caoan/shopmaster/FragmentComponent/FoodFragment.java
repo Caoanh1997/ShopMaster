@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.example.caoan.shopmaster.Adapter.FoodAdapter;
 import com.example.caoan.shopmaster.AddFoodActivity;
+import com.example.caoan.shopmaster.EditFoodActivity;
 import com.example.caoan.shopmaster.Model.Food;
 import com.example.caoan.shopmaster.ProductActivity;
 import com.example.caoan.shopmaster.R;
@@ -167,7 +168,9 @@ public class FoodFragment extends Fragment {
                 btnedit.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Toast.makeText(getContext(),"Edit",Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(getActivity(), EditFoodActivity.class);
+                        intent.putExtra("Food",food);
+                        startActivity(intent);
                     }
                 });
                 return false;
