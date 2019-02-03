@@ -153,6 +153,11 @@ public class ShopActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        if(user == null){
+            startActivity(new Intent(ShopActivity.this, LoginActivity.class));
+        }
         super.onStart();
     }
 

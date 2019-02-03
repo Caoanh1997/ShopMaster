@@ -331,7 +331,6 @@ public class EditShopActivity extends AppCompatActivity {
             progressDialog.dismiss();
             url = getUrlImage();
             new ProgressUploadStore().execute();
-
         }
 
         @Override
