@@ -127,6 +127,12 @@ public class EditShopActivity extends AppCompatActivity {
                 }
             }
         });
+        btncancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
     }
 
     @Override

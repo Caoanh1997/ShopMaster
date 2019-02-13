@@ -62,6 +62,7 @@ public class EditFoodActivity extends AppCompatActivity {
 
         btnchooseImage = findViewById(R.id.btnchooseimage);
         btnsave = findViewById(R.id.btnsave);
+        btncancel = findViewById(R.id.btncancel);
         imagefood = findViewById(R.id.imagefood);
         etnamefood = findViewById(R.id.etnamefood);
         etdescription = findViewById(R.id.etdescription);
@@ -91,6 +92,12 @@ public class EditFoodActivity extends AppCompatActivity {
                         new ProcessUploadFood().execute();
                     }
                 }
+            }
+        });
+        btncancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
             }
         });
     }
