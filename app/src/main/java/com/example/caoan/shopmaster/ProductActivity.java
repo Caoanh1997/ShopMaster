@@ -11,9 +11,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TabHost;
+import android.widget.Toast;
 
 import com.example.caoan.shopmaster.Adapter.FragmentAdapter;
 import com.example.caoan.shopmaster.FragmentComponent.FoodFragment;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,12 +27,16 @@ public class ProductActivity extends AppCompatActivity {
     private ViewPager viewPager;
     private List<Fragment> fragmentList;
     private FragmentAdapter adapter;
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser firebaseUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product);
         viewPager = findViewById(R.id.viewpager);
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
 
         initTabhost();
         fillFragment();
@@ -74,6 +81,11 @@ public class ProductActivity extends AppCompatActivity {
         switch (item.getItemId()){
             case R.id.shop:
                 startActivity(new Intent(ProductActivity.this,ShopActivity.class));
+                return true;
+            case R.id.logout:
+                firebaseAuth.signOut();
+                Toast.makeText(getApplicationContext(),"Sign out ok",Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(ProductActivity.this, LoginActivity.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

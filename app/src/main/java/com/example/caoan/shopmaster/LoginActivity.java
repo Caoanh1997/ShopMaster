@@ -1,8 +1,14 @@
 package com.example.caoan.shopmaster;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -43,37 +49,50 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String email = String.valueOf(etemail.getText());
                 String password = String.valueOf(etpassword.getText());
-                if(email == null || password == null || email.equals("") || password.equals("")){
-                    AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this)
-                            .setTitle("Thong bao")
-                            .setMessage("Chua dien day du thong tin ?")
-                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    dialogInterface.dismiss();
+                if(CheckOnline()){
+                    if(email == null || password == null || email.equals("") || password.equals("")){
+                        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this)
+                                .setTitle("Thông báo")
+                                .setMessage("Chưa điền đầy đủ thông tin ?")
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        dialogInterface.dismiss();
+                                    }
+                                });
+                        AlertDialog alertDialog = builder.create();
+                        alertDialog.show();
+                    }else {
+                        firebaseAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if(task.isSuccessful()){
+//                                FirebaseUser user = firebaseAuth.getCurrentUser();
+//                                tvuserid.setText(user.getUid());
+//                                try {
+//                                    Thread.sleep(3000);
+//                                    startActivity(new Intent(LoginActivity.this,ShopActivity.class));
+//                                } catch (InterruptedException e) {
+//                                    e.printStackTrace();
+//                                }
+                                    new ProcessLogin(tvuserid).execute();
+                                }else {
+                                    Toast.makeText(getApplicationContext(),"Sign up failed",Toast.LENGTH_SHORT).show();
                                 }
-                            });
-                    AlertDialog alertDialog = builder.create();
-                    alertDialog.show();
-                }else {
-                    firebaseAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if(task.isSuccessful()){
-                                FirebaseUser user = firebaseAuth.getCurrentUser();
-                                tvuserid.setText(user.getUid());
-                                try {
-                                    Thread.sleep(3000);
-                                    startActivity(new Intent(LoginActivity.this,ShopActivity.class));
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                            }else {
-                                Toast.makeText(getApplicationContext(),"Sign up failed",Toast.LENGTH_SHORT).show();
                             }
+                        });
+                    }
+                }else {
+                    final Snackbar snackbar = Snackbar.make(btsignin,"Kiểm tra kêt nối Internet",Snackbar.LENGTH_SHORT);
+                    snackbar.setAction("DISMISS", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            snackbar.dismiss();
                         }
                     });
+                    snackbar.show();
                 }
+
             }
         });
         btsignup.setOnClickListener(new View.OnClickListener() {
@@ -97,6 +116,54 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    class ProcessLogin extends AsyncTask<Void, String, String>{
+
+        private ProgressDialog progressDialog;
+        private TextView textView;
+        private FirebaseUser user;
+
+        public ProcessLogin(TextView textView) {
+            this.textView = textView;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            user = firebaseAuth.getCurrentUser();
+            progressDialog = new ProgressDialog(LoginActivity.this);
+            progressDialog.setIndeterminate(true);
+            progressDialog.setMessage("Đang đăng nhập...");
+            progressDialog.show();
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            progressDialog.dismiss();
+            startActivity(new Intent(LoginActivity.this,ShopActivity.class));
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            textView.setText(values[0]);
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            for(int i=1;i<=100;i++){
+                if(i==50){
+                    publishProgress(user.getUid());
+                }
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        }
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -112,4 +179,16 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
     }
+
+    public boolean CheckOnline(){
+        ConnectivityManager manager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+        if(networkInfo != null && networkInfo.isConnected()){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
 }
+

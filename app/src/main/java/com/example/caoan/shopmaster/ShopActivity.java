@@ -182,7 +182,7 @@ public class ShopActivity extends AppCompatActivity {
             for (int i =0;i<100;i++){
                 publishProgress(i);
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(80);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

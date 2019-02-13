@@ -71,7 +71,6 @@ public class FoodFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -195,7 +194,7 @@ public class FoodFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Food food = (Food) adapterView.getItemAtPosition(i);
-                Toast.makeText(getContext(),food.toString(),Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getContext(),food.toString(),Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -223,7 +222,7 @@ public class FoodFragment extends Fragment {
             for (int i =0;i<100;i++){
                 publishProgress(i);
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(50);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

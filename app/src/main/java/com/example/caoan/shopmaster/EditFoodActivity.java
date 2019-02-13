@@ -143,7 +143,7 @@ public class EditFoodActivity extends AppCompatActivity {
             for(int i=1;i<=100;i++){
                 publishProgress(i);
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(50);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -205,7 +205,7 @@ public class EditFoodActivity extends AppCompatActivity {
             for(int i=1;i<=100;i++){
                 publishProgress(i);
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(50);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -247,7 +247,7 @@ public class EditFoodActivity extends AppCompatActivity {
             for(int i=1;i<=100;i++){
                 publishProgress(i);
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(50);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -302,7 +302,7 @@ public class EditFoodActivity extends AppCompatActivity {
             for(int i=1;i<=100;i++){
                 publishProgress(i);
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(50);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
