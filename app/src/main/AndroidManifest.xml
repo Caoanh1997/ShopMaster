@@ -44,7 +44,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".EditFoodActivity"></activity>
+        <activity android:name=".EditFoodActivity" />
+        <activity android:name=".AddDrinkActivity" />
+        <activity android:name=".EditDrinkActivity"></activity>
     </application>
 
 </manifest>

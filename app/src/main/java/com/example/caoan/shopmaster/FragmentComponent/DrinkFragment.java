@@ -1,53 +1,70 @@
 package com.example.caoan.shopmaster.FragmentComponent;
 
 import android.content.Context;
-import android.net.Uri;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.GridView;
+import android.widget.PopupMenu;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.caoan.shopmaster.Adapter.DrinkAdapter;
+import com.example.caoan.shopmaster.AddDrinkActivity;
+import com.example.caoan.shopmaster.Model.Drink;
+import com.example.caoan.shopmaster.Model.Drink;
+import com.example.caoan.shopmaster.ProductActivity;
 import com.example.caoan.shopmaster.R;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link DrinkFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link DrinkFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+import java.util.List;
+
 public class DrinkFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    private OnFragmentInteractionListener mListener;
+    private View view;
+    private TextView tv;
+    private GridView gridView;
+    private Button button,btnadddrink;
+    private ProgressBar progressBar;
+    private FloatingActionButton fab;
+    private String key;
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser firebaseUser;
+    private FirebaseDatabase firebaseDatabase;
+    private FirebaseStorage firebaseStorage;
+    private List<Drink> drinkList;
+    private DrinkAdapter adapter;
 
     public DrinkFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment DrinkFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static DrinkFragment newInstance(String param1, String param2) {
+    public static DrinkFragment newInstance(String str) {
         DrinkFragment fragment = new DrinkFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString("s",str);
         fragment.setArguments(args);
         return fragment;
     }
@@ -55,55 +72,182 @@ public class DrinkFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_drink, container, false);
+        //return inflater.inflate(R.layout.fragment_drink, container, false);
+        view = inflater.inflate(R.layout.fragment_drink, container, false);
+        tv = view.findViewById(R.id.tv);
+        gridView = view.findViewById(R.id.gv);
+        button = view.findViewById(R.id.btsize);
+        btnadddrink = view.findViewById(R.id.btnadddrink);
+        progressBar = view.findViewById(R.id.progress);
+        fab = view.findViewById(R.id.fab);
+
+        Bundle bundle = getArguments();
+        key = bundle.getString("s");
+        tv.setText(key);
+        gridView.setVisibility(View.INVISIBLE);
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        DatabaseReference reference = firebaseDatabase.getReference("Product").child(key)
+                .child("Drink");
+        /*for(int i=0;i<5;i++){
+            String drinkID = reference.push().getKey();
+            Drink drink = new Drink(drinkID,"Cafe "+i, "This is cafe",
+                    "https://www.chowstatic.com/assets/models/promotions/photos/29495/" +
+                            "original/Arnold-Palmer-lemonade-iced-tea-drink-recipe-chowhound.jpg", 10000);
+            reference.child(drinkID).setValue(drink);
+        }*/
+        new ProgressBarProcess().execute();
+        drinkList = new ArrayList<>();
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    Drink drink = snapshot.getValue(Drink.class);
+                    //System.out.println(drink.getName());
+                    drinkList.add(drink);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getContext(),isOnline()+" "+String.valueOf(drinkList.size()),Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                final Drink drink = (Drink) adapterView.getItemAtPosition(i);
+                final String key_drink = ((Drink) adapterView.getItemAtPosition(i)).getKey();
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("Choose action");
+                view = getLayoutInflater().inflate(R.layout.product_action_layout,null);
+                builder.setView(view);
+                final AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+
+                FloatingActionButton btnedit, btndelete;
+                btnedit = view.findViewById(R.id.btnedit);
+                btndelete = view.findViewById(R.id.btndelete);
+
+                btndelete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        DatabaseReference reference = firebaseDatabase.getReference("Product").child(key)
+                                .child("Drink");
+
+                        reference.child(key_drink).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                System.out.println("Delete drink success");
+                            }
+                        });
+                        StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(drink.getUrlimage());
+                        storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                System.out.println("Delete Image Drink success");
+                                alertDialog.dismiss();
+                                startActivity(new Intent(getActivity(), ProductActivity.class));
+                            }
+                        });
+                    }
+                });
+                /*btnedit.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(getActivity(), EditDrinkActivity.class);
+                        intent.putExtra("Drink",drink);
+                        startActivity(intent);
+                    }
+                });*/
+                return false;
+            }
+        });
+        btnadddrink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //startActivity(new Intent(getActivity(), AddDrinkActivity.class));
+                PopupMenu popupMenu = new PopupMenu(getContext(),btnadddrink);
+                popupMenu.getMenuInflater().inflate(R.menu.context_menu,popupMenu.getMenu());
+                popupMenu.show();
+            }
+        });
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getActivity(), AddDrinkActivity.class));
+            }
+        });
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Drink drink = (Drink) adapterView.getItemAtPosition(i);
+                //Toast.makeText(getContext(),drink.toString(),Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+    class ProgressBarProcess extends AsyncTask<Void,Integer,String> {
+        @Override
+        protected void onPostExecute(String s) {
+            //super.onPostExecute(s);
+            progressBar.setVisibility(View.GONE);
+            gridView.setVisibility(View.VISIBLE);
+            adapter = new DrinkAdapter(getContext(),drinkList);
+            gridView.setAdapter(adapter);
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            //super.onProgressUpdate(values);
+            progressBar.setProgress(values[0]);
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            for (int i =0;i<100;i++){
+                publishProgress(i);
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            return "Done";
+        }
+    }
+
+    public String isOnline(){
+        ConnectivityManager manager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+        if(networkInfo != null && networkInfo.isConnected()){
+            return "Online";
+        }else {
+            return "Offline";
         }
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+//        super.onCreateContextMenu(menu, v, menuInfo);
+        getActivity().getMenuInflater().inflate(R.menu.context_menu,menu);
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }
 }

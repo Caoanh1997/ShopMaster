@@ -3,9 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".FragmentComponent.DrinkFragment"
     android:orientation="vertical"
     android:background="@color/green">
+
+    <ProgressBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:id="@+id/progress"/>
 
     <TextView
         android:layout_centerHorizontal="true"
@@ -14,11 +21,17 @@
         android:textSize="25sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Drink"
+        android:text="Food"
         android:id="@+id/tv"/>
+    <Button
+        android:layout_below="@+id/tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add product(Popup Menu)"
+        android:id="@+id/btnadddrink"/>
 
     <GridView
-        android:layout_below="@+id/tv"
+        android:layout_below="@+id/btnadddrink"
         android:verticalSpacing="2dp"
         android:horizontalSpacing="2dp"
         android:id="@+id/gv"
@@ -28,7 +41,6 @@
         android:layout_height="250dp">
     </GridView>
     <Button
-        android:visibility="visible"
         android:textSize="25sp"
         android:layout_centerHorizontal="true"
         android:text="Size list"
@@ -37,5 +49,13 @@
         android:id="@+id/btsize"
         android:layout_below="@+id/gv"/>
 
-
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="5dp"
+        app:srcCompat="@android:drawable/ic_input_add"
+        />
 </RelativeLayout>

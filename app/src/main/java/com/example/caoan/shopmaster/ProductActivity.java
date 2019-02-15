@@ -14,6 +14,7 @@ import android.widget.TabHost;
 import android.widget.Toast;
 
 import com.example.caoan.shopmaster.Adapter.FragmentAdapter;
+import com.example.caoan.shopmaster.FragmentComponent.DrinkFragment;
 import com.example.caoan.shopmaster.FragmentComponent.FoodFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -98,10 +99,10 @@ public class ProductActivity extends AppCompatActivity {
         String key = getKey_Store();
 
         FoodFragment foodFragment = new FoodFragment().newInstance(key);
-        FoodFragment foodFragment1 = new FoodFragment().newInstance(key);
-//        DrinkFragment drinkFragment = new DrinkFragment().newInstance();
+        //FoodFragment foodFragment1 = new FoodFragment().newInstance(key);
+        DrinkFragment drinkFragment = new DrinkFragment().newInstance(key);
         fragmentList.add(foodFragment);
-        fragmentList.add(foodFragment1);
+        fragmentList.add(drinkFragment);
     }
 
     private void initTabhost() {
