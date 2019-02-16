@@ -68,6 +68,9 @@ public class EditFoodActivity extends AppCompatActivity {
         etdescription = findViewById(R.id.etdescription);
         etprice = findViewById(R.id.etprice);
 
+        btnsave.setEnabled(false);
+        btncancel.setEnabled(false);
+
         Intent intent = getIntent();
         food = (Food) intent.getSerializableExtra("Food");
         etnamefood.setText(food.getName());
@@ -365,14 +368,26 @@ public class EditFoodActivity extends AppCompatActivity {
     class ProcessImage extends AsyncTask<String, Integer,Bitmap>{
 
         private ImageView imageView;
+        private ProgressDialog progressDialog;
 
         public ProcessImage(ImageView imageView) {
             this.imageView = imageView;
         }
 
         @Override
+        protected void onPreExecute() {
+            progressDialog = new ProgressDialog(EditFoodActivity.this);
+            progressDialog.setMessage("Loading...");
+            progressDialog.setIndeterminate(true);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+        @Override
         protected void onPostExecute(Bitmap bitmap) {
+            progressDialog.dismiss();
             imageView.setImageBitmap(bitmap);
+            btnsave.setEnabled(true);
+            btncancel.setEnabled(true);
         }
 
         @Override

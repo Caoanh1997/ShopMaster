@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.example.caoan.shopmaster.Adapter.DrinkAdapter;
 import com.example.caoan.shopmaster.AddDrinkActivity;
+import com.example.caoan.shopmaster.EditDrinkActivity;
 import com.example.caoan.shopmaster.Model.Drink;
 import com.example.caoan.shopmaster.Model.Drink;
 import com.example.caoan.shopmaster.ProductActivity;
@@ -167,14 +168,14 @@ public class DrinkFragment extends Fragment {
                         });
                     }
                 });
-                /*btnedit.setOnClickListener(new View.OnClickListener() {
+                btnedit.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(getActivity(), EditDrinkActivity.class);
                         intent.putExtra("Drink",drink);
                         startActivity(intent);
                     }
-                });*/
+                });
                 return false;
             }
         });
