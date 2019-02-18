@@ -15,15 +15,17 @@
         android:id="@+id/progress"/>
 
     <TextView
+        android:visibility="gone"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center"
         android:layout_margin="10dp"
         android:textSize="25sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Food"
+        android:text="Drink"
         android:id="@+id/tv"/>
     <Button
+        android:visibility="gone"
         android:layout_below="@+id/tv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -41,6 +43,7 @@
         android:layout_height="250dp">
     </GridView>
     <Button
+        android:visibility="gone"
         android:textSize="25sp"
         android:layout_centerHorizontal="true"
         android:text="Size list"

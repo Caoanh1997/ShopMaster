@@ -15,6 +15,7 @@ public class WelcomeActivity extends AppCompatActivity {
 
     private ImageView imageView;
     private ProgressBar progressBar;
+    private boolean pause = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,8 +70,16 @@ public class WelcomeActivity extends AppCompatActivity {
     class ProcessLoad extends AsyncTask<Void, Integer, String>{
         @Override
         protected String doInBackground(Void... voids) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             for( int i =0;i<=100;i++){
                 publishProgress(i);//gởi lại i cho main thread (UI thread)
+                if(pause){
+                    cancel(true);
+                }
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
@@ -89,5 +98,17 @@ public class WelcomeActivity extends AppCompatActivity {
         protected void onPostExecute(String s) {
             startActivity(new Intent(WelcomeActivity.this,LoginActivity.class));
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        finish();
+        pause = true;
     }
 }

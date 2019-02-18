@@ -16,6 +16,8 @@ import android.widget.Toast;
 import com.example.caoan.shopmaster.Adapter.FragmentAdapter;
 import com.example.caoan.shopmaster.FragmentComponent.DrinkFragment;
 import com.example.caoan.shopmaster.FragmentComponent.FoodFragment;
+import com.example.caoan.shopmaster.ViewPageTransformer.DepthPageTransformer;
+import com.example.caoan.shopmaster.ViewPageTransformer.ZoomOutPageTransformer;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -45,7 +47,7 @@ public class ProductActivity extends AppCompatActivity {
         adapter = new FragmentAdapter(getSupportFragmentManager(),fragmentList);
 
         viewPager.setAdapter(adapter);
-
+        viewPager.setPageTransformer(true,new ZoomOutPageTransformer());
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -81,7 +83,7 @@ public class ProductActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.shop:
-                startActivity(new Intent(ProductActivity.this,ShopActivity.class));
+                onBackPressed();
                 return true;
             case R.id.logout:
                 firebaseAuth.signOut();

@@ -211,8 +211,12 @@ public class DrinkFragment extends Fragment {
             //super.onPostExecute(s);
             progressBar.setVisibility(View.GONE);
             gridView.setVisibility(View.VISIBLE);
-            adapter = new DrinkAdapter(getContext(),drinkList);
-            gridView.setAdapter(adapter);
+            if(drinkList == null || drinkList.size()==0){
+                Toast.makeText(getContext(),"Chưa có sản phẩm",Toast.LENGTH_SHORT).show();
+            }else {
+                adapter = new DrinkAdapter(getContext(),drinkList);
+                gridView.setAdapter(adapter);
+            }
         }
 
         @Override
