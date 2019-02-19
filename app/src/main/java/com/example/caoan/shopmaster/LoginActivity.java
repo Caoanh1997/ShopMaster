@@ -30,9 +30,9 @@ public class LoginActivity extends AppCompatActivity {
 
     private Button btsignin, btsignup;
     private EditText etemail, etpassword, etname, etaddress, etphone;
-    private TextView tvuserid, tvsignup;
+    private TextView tvuserid, tvsignup, tvsignin;
     private FirebaseAuth firebaseAuth;
-    private Animation animation, animation2;
+    private Animation animation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,11 +48,16 @@ public class LoginActivity extends AppCompatActivity {
         etphone = findViewById(R.id.etphone);
         tvuserid = findViewById(R.id.tvuserid);
         tvsignup = findViewById(R.id.tvsignup);
+        tvsignin = findViewById(R.id.tvsignin);
 
-        etname.setVisibility(View.GONE);
-        etaddress.setVisibility(View.GONE);
-        etphone.setVisibility(View.GONE);
+        etname.setVisibility(View.INVISIBLE);
+        etaddress.setVisibility(View.INVISIBLE);
+        etphone.setVisibility(View.INVISIBLE);
+        etname.setClickable(false);
+        etaddress.setClickable(false);
+        etphone.setClickable(false);
         btsignup.setVisibility(View.GONE);
+        tvsignin.setVisibility(View.GONE);
 
         tvsignup.setClickable(true);
         animation = new AnimationUtils().loadAnimation(getApplicationContext(), R.anim.fade_out);
@@ -64,6 +69,10 @@ public class LoginActivity extends AppCompatActivity {
         final ObjectAnimator objectAnimator4 = (ObjectAnimator) AnimatorInflater.loadAnimator(this, R.animator.move_right_animator);
         final ObjectAnimator objectAnimator5 = (ObjectAnimator) AnimatorInflater.loadAnimator(this, R.animator.move_left_animator);
         final ObjectAnimator objectAnimator6 = (ObjectAnimator) AnimatorInflater.loadAnimator(this, R.animator.move_up_animator);
+        final ObjectAnimator objectAnimator7 = (ObjectAnimator) AnimatorInflater.loadAnimator(this, R.animator.move_down_animator);
+        final ObjectAnimator objectAnimator8 = (ObjectAnimator) AnimatorInflater.loadAnimator(this, R.animator.move_down_animator);
+        final ObjectAnimator objectAnimator9 = (ObjectAnimator) AnimatorInflater.loadAnimator(this, R.animator.move_up_animator);
+        final ObjectAnimator objectAnimator10 = (ObjectAnimator) AnimatorInflater.loadAnimator(this, R.animator.move_up_animator);
 
         objectAnimator.setTarget(tvsignup);
         objectAnimator1.setTarget(btsignin);
@@ -72,6 +81,13 @@ public class LoginActivity extends AppCompatActivity {
         objectAnimator4.setTarget(etaddress);
         objectAnimator5.setTarget(etphone);
         objectAnimator6.setTarget(btsignup);
+        objectAnimator7.setTarget(etemail);
+        objectAnimator8.setTarget(etpassword);
+        objectAnimator9.setTarget(etemail);
+        objectAnimator10.setTarget(etpassword);
+
+        objectAnimator7.start();
+        objectAnimator8.start();
 
         tvsignup.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,6 +100,9 @@ public class LoginActivity extends AppCompatActivity {
                 etaddress.setVisibility(View.VISIBLE);
                 etphone.setVisibility(View.VISIBLE);
                 btsignup.setVisibility(View.VISIBLE);
+                tvsignin.setVisibility(View.VISIBLE);
+                tvsignin.setClickable(true);
+                tvsignup.setVisibility(View.GONE);
 
                 //etpassword.startAnimation(animation);
                 objectAnimator.start();
@@ -93,9 +112,38 @@ public class LoginActivity extends AppCompatActivity {
                 objectAnimator4.start();
                 objectAnimator5.start();
                 objectAnimator6.start();
+                objectAnimator9.start();
+                objectAnimator10.start();
             }
         });
+        tvsignin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                /*etname.startAnimation(animation);
+                etaddress.startAnimation(animation);
+                etphone.startAnimation(animation);
+                etname.setVisibility(View.INVISIBLE);
+                etaddress.setVisibility(View.INVISIBLE);
+                etphone.setVisibility(View.INVISIBLE);
+                etname.setEnabled(false);
+                etaddress.setEnabled(false);
+                etphone.setEnabled(false);
 
+                btsignin.setVisibility(View.VISIBLE);
+                btsignin.setEnabled(true);
+
+                tvsignin.setClickable(false);
+                tvsignin.setVisibility(View.GONE);
+
+                tvsignup.setClickable(true);
+                tvsignup.setVisibility(View.VISIBLE);
+
+                objectAnimator7.start();
+                objectAnimator8.start();*/
+                finish();
+                startActivity(getIntent());
+            }
+        });
         firebaseAuth = FirebaseAuth.getInstance();
 
         btsignin.setOnClickListener(new View.OnClickListener() {

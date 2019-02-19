@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_margin="10dp"
+        android:layout_margin="5dp"
         android:text="Tài khoản"
         android:textSize="25sp" />
 
@@ -20,63 +20,77 @@
         android:id="@+id/etemail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_margin="5dp"
         android:hint="nhập email"
-        android:inputType="textEmailAddress" />
+        android:inputType="textEmailAddress"
+        android:background="@drawable/state_edittext"
+        android:paddingLeft="5dp"/>
 
     <EditText
         android:id="@+id/etpassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_margin="5dp"
         android:hint="nhập mật khẩu"
-        android:inputType="textPassword" />
+        android:inputType="textPassword"
+        android:background="@drawable/state_edittext"
+        android:paddingLeft="5dp"/>
 
     <EditText
         android:id="@+id/etname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_margin="5dp"
         android:hint="nhập tên"
-        android:inputType="textPassword" />
+        android:inputType="textPassword"
+        android:background="@drawable/state_edittext"
+        android:paddingLeft="5dp"/>
     <EditText
         android:id="@+id/etaddress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_margin="5dp"
         android:hint="nhập địa chỉ"
-        android:inputType="textPassword" />
+        android:inputType="textPassword"
+        android:background="@drawable/state_edittext"
+        android:paddingLeft="5dp"/>
     <EditText
         android:id="@+id/etphone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_margin="5dp"
         android:hint="nhập số điện thoại"
-        android:inputType="textPassword" />
+        android:inputType="textPassword"
+        android:background="@drawable/state_edittext"
+        android:paddingLeft="5dp"/>
 
     <TextView
         android:visibility="gone"
         android:id="@+id/tvuserid"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_margin="5dp"
         android:textSize="25sp" />
 
     <Button
         android:id="@+id/btsignin"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_margin="10dp"
-        android:text="Đăng nhập" />
+        android:layout_marginTop="15dp"
+        android:text="Đăng nhập"
+        android:textColor="@color/white"
+        android:background="@drawable/state_button"/>
 
     <Button
         android:id="@+id/btsignup"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_margin="10dp"
-        android:text="Đăng ký" />
+        android:layout_marginTop="15dp"
+        android:text="Đăng ký"
+        android:textColor="@color/white"
+        android:background="@drawable/state_button"/>
 
     <TextView
         android:id="@+id/tvsignup"
@@ -87,5 +101,15 @@
         android:text="Chưa có tài khoản? Đăng ký ngay bây giờ."
         android:textColor="@color/blue"
         android:textSize="17sp" />
+    <TextView
+        android:id="@+id/tvsignin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="Đã có tài khoản? Đăng nhập ngay bây giờ."
+        android:textColor="@color/blue"
+        android:textSize="17sp" />
+
 
 </LinearLayout>
