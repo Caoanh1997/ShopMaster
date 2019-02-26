@@ -42,7 +42,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:hint="nhập tên"
-        android:inputType="textPassword"
+        android:inputType="text"
         android:background="@drawable/state_edittext"
         android:paddingLeft="5dp"/>
     <EditText
@@ -51,7 +51,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:hint="nhập địa chỉ"
-        android:inputType="textPassword"
+        android:inputType="text"
         android:background="@drawable/state_edittext"
         android:paddingLeft="5dp"/>
     <EditText
@@ -60,7 +60,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:hint="nhập số điện thoại"
-        android:inputType="textPassword"
+        android:inputType="phone"
         android:background="@drawable/state_edittext"
         android:paddingLeft="5dp"/>
 
@@ -89,6 +89,16 @@
         android:layout_gravity="center"
         android:layout_marginTop="15dp"
         android:text="Đăng ký"
+        android:textColor="@color/white"
+        android:background="@drawable/state_button"/>
+
+    <Button
+        android:id="@+id/btsignout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="15dp"
+        android:text="Đăng xuất"
         android:textColor="@color/white"
         android:background="@drawable/state_button"/>
 
