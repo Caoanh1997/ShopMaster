@@ -49,7 +49,7 @@ public class OrderAdapter extends ArrayAdapter<Bill> {
             viewHolder.tvstore = convertView.findViewById(R.id.tvstore);
             viewHolder.btconfirm = convertView.findViewById(R.id.btconfirm);
 
-            Bill bill = getItem(position);
+            final Bill bill = getItem(position);
             if (bill != null){
                 viewHolder.tvproduct.setText(bill.getProduct());
                 viewHolder.tvprice.setText(bill.getTotal_price());
@@ -74,11 +74,23 @@ public class OrderAdapter extends ArrayAdapter<Bill> {
                 viewHolder.btconfirm.setEnabled(true);
                 if(state.equals("Đã xác nhận")){
                     viewHolder.btconfirm.setEnabled(false);
+                    viewHolder.btconfirm.setText("Đã xác nhận");
                 }
                 viewHolder.btconfirm.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Toast.makeText(getContext(),"Xác nhận", Toast.LENGTH_SHORT).show();
+                        viewHolder.btconfirm.setText("Đã xác nhận");
+                        viewHolder.btconfirm.setEnabled(false);
+                        DatabaseReference reference = firebaseDatabase.getReference("Transport");
+                        String userID = getContext().getSharedPreferences("Account",Context.MODE_PRIVATE)
+                                .getString("userID","");
+                        reference.child(userID).child(bill.getKey_cart())
+                                .setValue(new Bill(bill.getKey_cart(),bill.getName_user(),bill.getAddress(),bill.getPhone()
+                                        ,bill.getProduct(),bill.getTotal_price(),"Đã xác nhận",bill.getKey_store(),bill.getDatetime()));
+
+                        DatabaseReference reference1 = firebaseDatabase.getReference("NewOrder");
+                        reference1.child(userID).child(bill.getKey_cart()).removeValue();
                     }
                 });
             }
@@ -92,5 +104,11 @@ public class OrderAdapter extends ArrayAdapter<Bill> {
     class ViewHolder{
         private TextView tvproduct, tvprice, tvuser, tvstate, tvstore;
         private Button btconfirm;
+    }
+
+    @NonNull
+    @Override
+    public Context getContext() {
+        return context;
     }
 }
