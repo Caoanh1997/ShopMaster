@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:weightSum="120">
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="20"
+        android:text="Tên sản phẩm( số lượng)"
+        android:id="@+id/tvproduct"
+        android:textSize="10sp" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="20"
+        android:text="Tổng tiền(vnd)"
+        android:id="@+id/tvprice"
+        android:textSize="10sp" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="20"
+        android:text="Khách hàng"
+        android:id="@+id/tvuser"
+        android:textSize="10sp" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="20"
+        android:text="Trạng thái"
+        android:id="@+id/tvstate"
+        android:textSize="10sp" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="20"
+        android:text="Cửa hàng"
+        android:id="@+id/tvstore"
+        android:textSize="10sp" />
+
+    <Button
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="20"
+        android:text="Xác nhận"
+        android:textSize="10sp"
+        android:id="@+id/btconfirm"/>
+
+</LinearLayout>

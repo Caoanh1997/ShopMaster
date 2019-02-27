@@ -146,6 +146,9 @@ public class ShopActivity extends AppCompatActivity {
                 finish();
                 startActivity(getIntent());
                 return true;
+            case R.id.manage:
+                startActivity(new Intent(this,OrderManagementActivity.class));
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

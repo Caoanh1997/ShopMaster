@@ -146,6 +146,7 @@ public class LoginActivity extends AppCompatActivity {
 //                                            btsignout.setVisibility(View.VISIBLE);
                                             FirebaseUser user = firebaseAuth.getCurrentUser();
                                             updateUI(user);
+                                            SaveAccountToSharedPreferences(user);
                                             new ProcessLogin(tvuserid).execute();
                                         } else {
                                             Toast.makeText(getApplicationContext(), "Sign in failed", Toast.LENGTH_SHORT).show();
@@ -181,10 +182,7 @@ public class LoginActivity extends AppCompatActivity {
                                         Account account = new Account(name,address,phone);
                                         databaseReference.child(user.getUid()).setValue(account);
                                         updateUI(user);
-                                        SharedPreferences sharedPreferences = getSharedPreferences("Account",Context.MODE_PRIVATE);
-                                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                                        editor.putString("userID",user.getUid());
-                                        editor.commit();
+                                        SaveAccountToSharedPreferences(user);
                                         new ProcessLogin(tvuserid).execute();
                                     //}
                                 } else {
@@ -220,6 +218,9 @@ public class LoginActivity extends AppCompatActivity {
         //check if user is signed in
         FirebaseUser user = firebaseAuth.getCurrentUser();
         updateUI(user);
+        if(user != null){
+            startActivity(new Intent(this,ShopActivity.class));
+        }
 //        if (user != null) {
 //            tvuserid.setText(user.getUid() + ",verity: " + user.isEmailVerified());
 //            try {
@@ -346,6 +347,12 @@ public class LoginActivity extends AppCompatActivity {
             }
             return null;
         }
+    }
+    public void SaveAccountToSharedPreferences(FirebaseUser user){
+        SharedPreferences sharedPreferences = getSharedPreferences("Account",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("userID",user.getUid());
+        editor.commit();
     }
 
 }

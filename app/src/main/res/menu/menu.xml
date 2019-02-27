@@ -23,4 +23,7 @@
     <item android:id="@+id/shop"
         android:title="Go to shop"
         app:showAsAction="never"/>
+    <item android:id="@+id/manage"
+        android:title="Quản lý đơn hàng"
+        app:showAsAction="never"/>
 </menu>
