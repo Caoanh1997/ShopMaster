@@ -147,7 +147,13 @@ public class ShopActivity extends AppCompatActivity {
                 startActivity(getIntent());
                 return true;
             case R.id.manage:
-                startActivity(new Intent(this,OrderManagementActivity.class));
+                startActivity(new Intent(this,OrderActivity.class));
+                return true;
+            case R.id.transport:
+                startActivity(new Intent(this, TransportActivity.class));
+                return true;
+            case R.id.delivered:
+                startActivity(new Intent(this, DeliveredActivity.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

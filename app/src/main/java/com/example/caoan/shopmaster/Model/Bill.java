@@ -10,11 +10,12 @@ public class Bill {
     private String state;
     private String key_store;
     private String datetime;
+    private String datetime_delivered;
 
     public Bill() {
     }
 
-    public Bill(String key_cart, String name_user, String address, String phone, String product, String total_price, String state, String key_store, String datetime) {
+    public Bill(String key_cart, String name_user, String address, String phone, String product, String total_price, String state, String key_store, String datetime, String datetime_delivered) {
         this.key_cart = key_cart;
         this.name_user = name_user;
         this.address = address;
@@ -24,9 +25,10 @@ public class Bill {
         this.state = state;
         this.key_store = key_store;
         this.datetime = datetime;
+        this.datetime_delivered = datetime_delivered;
     }
 
-    public Bill(String name_user, String address, String phone, String product, String total_price, String state, String key_store, String datetime) {
+    public Bill(String name_user, String address, String phone, String product, String total_price, String state, String key_store, String datetime, String datetime_delivered) {
         this.name_user = name_user;
         this.address = address;
         this.phone = phone;
@@ -35,6 +37,7 @@ public class Bill {
         this.state = state;
         this.key_store = key_store;
         this.datetime = datetime;
+        this.datetime_delivered = datetime_delivered;
     }
 
     public String getKey_store() {
@@ -109,6 +112,14 @@ public class Bill {
         this.datetime = datetime;
     }
 
+    public String getDatetime_delivered() {
+        return datetime_delivered;
+    }
+
+    public void setDatetime_delivered(String datetime_delivered) {
+        this.datetime_delivered = datetime_delivered;
+    }
+
     @Override
     public String toString() {
         return "Bill{" +
@@ -121,6 +132,7 @@ public class Bill {
                 ", state='" + state + '\'' +
                 ", key_store='" + key_store + '\'' +
                 ", datetime='" + datetime + '\'' +
+                ", datetime_delivered='" + datetime_delivered + '\'' +
                 '}';
     }
 }

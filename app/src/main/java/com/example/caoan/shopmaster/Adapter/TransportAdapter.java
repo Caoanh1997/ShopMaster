@@ -20,14 +20,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
-public class OrderAdapter extends ArrayAdapter<Bill> {
+public class TransportAdapter extends ArrayAdapter<Bill> {
     private List<Bill> billList;
     private Context context;
     private FirebaseDatabase firebaseDatabase;
+    private Calendar calendar;
 
-    public OrderAdapter(@NonNull Context context, @NonNull List<Bill> objects) {
+    public TransportAdapter(@NonNull Context context, @NonNull List<Bill> objects) {
         super(context, 0, objects);
         billList = objects;
         this.context = context;
@@ -40,7 +43,7 @@ public class OrderAdapter extends ArrayAdapter<Bill> {
         if(convertView == null){
             viewHolder = new ViewHolder();
 
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.order_item_layout,parent,false);
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.transport_item_layout,parent,false);
 
             viewHolder.tvproduct = convertView.findViewById(R.id.tvproduct);
             viewHolder.tvprice = convertView.findViewById(R.id.tvprice);
@@ -48,7 +51,7 @@ public class OrderAdapter extends ArrayAdapter<Bill> {
             viewHolder.tvdatetime = convertView.findViewById(R.id.tvdatetime);
             viewHolder.tvstate = convertView.findViewById(R.id.tvstate);
             viewHolder.tvstore = convertView.findViewById(R.id.tvstore);
-            viewHolder.btconfirm = convertView.findViewById(R.id.btconfirm);
+            viewHolder.bttransport = convertView.findViewById(R.id.bttransported);
 
             final Bill bill = getItem(position);
             if (bill != null){
@@ -73,26 +76,32 @@ public class OrderAdapter extends ArrayAdapter<Bill> {
                     }
                 });
                 String state = String.valueOf(viewHolder.tvstate.getText());
-                viewHolder.btconfirm.setEnabled(true);
-                if(state.equals("Đã xác nhận và đang giao")){
-                    viewHolder.btconfirm.setEnabled(false);
-                    viewHolder.btconfirm.setText("Đã xác nhận");
+                viewHolder.bttransport.setEnabled(true);
+                if(state.equals("Đã giao")){
+                    viewHolder.bttransport.setEnabled(false);
+                    viewHolder.bttransport.setText("Đã giao");
                 }
-                viewHolder.btconfirm.setOnClickListener(new View.OnClickListener() {
+                viewHolder.bttransport.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Toast.makeText(getContext(),"Xác nhận", Toast.LENGTH_SHORT).show();
-                        viewHolder.btconfirm.setText("Đã xác nhận và đang giao");
-                        viewHolder.btconfirm.setEnabled(false);
-                        DatabaseReference reference = firebaseDatabase.getReference("Transport");
+                        Toast.makeText(getContext(),"Đã giao", Toast.LENGTH_SHORT).show();
+                        viewHolder.bttransport.setText("Đã giao");
+                        viewHolder.bttransport.setEnabled(false);
+                        DatabaseReference reference = firebaseDatabase.getReference("Delivered");
                         String userID = getContext().getSharedPreferences("Account",Context.MODE_PRIVATE)
                                 .getString("userID","");
+                        calendar = Calendar.getInstance();
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+
+                        String datetime_delivered = dateFormat.format(calendar.getTime())+" "+timeFormat.format(calendar.getTime());
                         reference.child(userID).child(bill.getKey_cart())
                                 .setValue(new Bill(bill.getKey_cart(),bill.getName_user(),bill.getAddress(),bill.getPhone()
-                                        ,bill.getProduct(),bill.getTotal_price(),"Đã xác nhận và đang giao",bill.getKey_store(),bill.getDatetime(),""));
+                                        ,bill.getProduct(),bill.getTotal_price(),"Đã giao",bill.getKey_store(),bill.getDatetime(),datetime_delivered));
 
-                        DatabaseReference reference1 = firebaseDatabase.getReference("NewOrder");
+                        DatabaseReference reference1 = firebaseDatabase.getReference("Transport");
                         reference1.child(userID).child(bill.getKey_cart()).removeValue();
+
                     }
                 });
 
@@ -106,7 +115,7 @@ public class OrderAdapter extends ArrayAdapter<Bill> {
 
     class ViewHolder{
         private TextView tvproduct, tvprice, tvuser, tvdatetime, tvstate, tvstore;
-        private Button btconfirm;
+        private Button bttransport;
     }
 
     @NonNull

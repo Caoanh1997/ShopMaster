@@ -24,6 +24,12 @@
         android:title="Go to shop"
         app:showAsAction="never"/>
     <item android:id="@+id/manage"
-        android:title="Quản lý đơn hàng"
+        android:title="Quản lý đơn hàng mới"
+        app:showAsAction="never"/>
+    <item android:id="@+id/transport"
+        android:title="Đơn hàng đang giao"
+        app:showAsAction="never"/>
+    <item android:id="@+id/delivered"
+        android:title="Đơn hàng đã giao"
         app:showAsAction="never"/>
 </menu>

@@ -50,24 +50,16 @@
         android:layout_width="0dp"
         android:layout_height="fill_parent"
         android:layout_weight="20"
+        android:text="Ngày giao"
+        android:id="@+id/tvdatetime_delivered"
+        android:textSize="10sp" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="20"
         android:text="Cửa hàng"
         android:id="@+id/tvstore"
         android:textSize="10sp" />
-
-    <Button
-        android:layout_width="0dp"
-        android:layout_height="fill_parent"
-        android:layout_weight="20"
-        android:text="Xác nhận"
-        android:textSize="10sp"
-        android:id="@+id/btconfirm"/>
-    <Button
-        android:visibility="gone"
-        android:layout_width="0dp"
-        android:layout_height="fill_parent"
-        android:layout_weight="20"
-        android:text="Đã giao"
-        android:textSize="10sp"
-        android:id="@+id/bttransported"/>
 
 </LinearLayout>

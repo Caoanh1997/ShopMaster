@@ -51,8 +51,11 @@
         <activity android:name=".EditDrinkActivity" />
         <activity
             android:name=".WelcomeActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".OrderManagementActivity"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".OrderManagementActivity" />
+        <activity android:name=".TransportActivity" />
+        <activity android:name=".DeliveredActivity" />
+        <activity android:name=".OrderActivity"></activity>
     </application>
 
 </manifest>

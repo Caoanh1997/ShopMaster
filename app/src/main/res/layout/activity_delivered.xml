@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".OrderManagementActivity"
+    tools:context=".DeliveredActivity"
     android:orientation="vertical">
 
     <TextView
         android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Quản lý đơn hàng mới"
+        android:text="Đơn hàng đã giao"
         android:textSize="30sp"/>
     <Button
         android:layout_width="match_parent"
@@ -68,7 +68,8 @@
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_weight="20"
-            android:text="Cửa hàng"
+            android:text="Ngày giao"
+            android:id="@+id/tvdatetime_delivered"
             android:textSize="10sp"
             android:textStyle="bold"/>
 
@@ -76,10 +77,10 @@
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_weight="20"
-            android:text="Hành động"
-            android:id="@+id/tvaction"
+            android:text="Cửa hàng"
             android:textSize="10sp"
             android:textStyle="bold"/>
+
 
     </LinearLayout>
     <ListView
@@ -88,4 +89,5 @@
         android:id="@+id/lvorder"
         >
     </ListView>
+
 </LinearLayout>
