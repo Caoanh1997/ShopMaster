@@ -60,6 +60,7 @@ public class EditShopActivity extends AppCompatActivity {
     private Intent intent;
     private Store store;
     private static int RESULT_CODE=71;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,22 +109,16 @@ public class EditShopActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-//                if(checkInput(etnamestore) && checkInput(etphone) && checkSpinner()){
-//                    //uploadImageStore();
-//                    //new ProgressUploadImage().execute();
-//                }else {
-//                    return;
-//                }
                 if(checkInput(etnamestore) && checkInput(etphone) && checkSpinner()){
                     if(filePath != null && filePath.toString() != store.getUrlImage()){
                         System.out.println("image moi");
                         deleteOldImageStorage();
-                        new ProcessDeleteImage().execute();
                     }else {
                         System.out.println("image cu");
                         uploadnewStore(store.getUrlImage());
-                        new ProcessUpdateStore().execute();
                     }
+                }else {
+                    return;
                 }
             }
         });
@@ -359,6 +354,12 @@ public class EditShopActivity extends AppCompatActivity {
     }
 
     private void uploadnewStore(String urlImage) {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Store Updating....");
+        progressDialog.setIndeterminate(true);
+        progressDialog.show();
+
         String key_store = store.getKey();
         String name = String.valueOf(etnamestore.getText());
         String duong = String.valueOf(etaddress.getText());
@@ -374,6 +375,8 @@ public class EditShopActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Void aVoid) {
                 System.out.println("Upload Store success");
+                progressDialog.dismiss();
+                startActivity(new Intent(EditShopActivity.this,ShopActivity.class));
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -381,7 +384,6 @@ public class EditShopActivity extends AppCompatActivity {
                 System.out.println("Upload Store failed");
             }
         });
-        startActivity(new Intent(EditShopActivity.this, ShopActivity.class));
     }
 
     class ProgressUploadStore extends AsyncTask<Void, Integer, Void>{
@@ -441,12 +443,82 @@ public class EditShopActivity extends AppCompatActivity {
         return urlImage;
     }
     public void deleteOldImageStorage(){
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Store Updating....");
+        progressDialog.setIndeterminate(true);
+        progressDialog.show();
 
         StorageReference storageReference = firebaseStorage.getReferenceFromUrl(store.getUrlImage());
         storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 System.out.println("Delete old image success");
+
+                //Upload new image store
+                if(filePath != null){
+                    namefileimage = UUID.randomUUID().toString();
+                    StorageReference storageReference = firebaseStorage.getReference("Store");
+                    storageReference.child(store.getKey()).child(namefileimage).putFile(filePath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            System.out.println("Uploaded Image success");
+
+                            //get url new image store
+                            StorageReference storageReference = firebaseStorage.getReference("Store");
+                            storageReference.child(store.getKey()).child(namefileimage).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    urlImage = uri.toString();
+                                    System.out.println("Get link image success");
+
+                                    //Update store
+                                    String key_store = store.getKey();
+                                    String name = String.valueOf(etnamestore.getText());
+                                    String duong = String.valueOf(etaddress.getText());
+                                    String xa = String.valueOf(spinnerxa.getTag());
+                                    String huyen = String.valueOf(spinnerhuyen.getTag());
+                                    String tinh = String.valueOf(spinnertinh.getTag());
+                                    String userkey = firebaseUser.getUid();
+                                    String phone = String.valueOf(etphone.getText());
+
+                                    Store store = new Store(key_store,name,duong,xa,huyen,tinh,userkey,urlImage,phone);
+                                    System.out.println(store.toString());
+                                    databaseReference.child(key_store).setValue(store).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            System.out.println("Update Store success");
+                                            progressDialog.dismiss();
+                                            startActivity(new Intent(EditShopActivity.this, ShopActivity.class));
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            System.out.println("Update Store failed");
+                                        }
+                                    });
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    System.out.println("Get link image failed");
+                                }
+                            });
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            System.out.println("Uploaded Image failed, "+e.getMessage());
+                        }
+                    }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+
+                        }
+                    });
+                }else{
+                    urlImage = store.getUrlImage();
+                }
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override

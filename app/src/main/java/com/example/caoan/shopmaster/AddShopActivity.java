@@ -50,7 +50,6 @@ public class AddShopActivity extends AppCompatActivity {
     private Uri filePath;
     private String namefileimage;
     private String url;
-    private String urlImage;
 
     private FirebaseStorage firebaseStorage;
     private StorageReference storageReference;
@@ -59,8 +58,7 @@ public class AddShopActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private Store store;
-    private ProgressDialog progressDialog,progress;
-    private int i=0;
+    private ProgressDialog progressDialog;
 
     private String key_store;
 
@@ -180,14 +178,7 @@ public class AddShopActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(checkInput(etnamestore) && checkInput(etphone) && checkImage(filePath) && checkSpinner()){
-                    uploadImageStore();
-                    progressDialog = new ProgressDialog(AddShopActivity.this);
-                    progressDialog.setMessage("Image is Uploading....");
-                    progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                    progressDialog.setMax(100);
-                    progressDialog.setProgress(0);
-                    progressDialog.show();
-                    new ProgressProcess().execute();
+                    UploadNewStore();
                 }else {
                     return;
                 }
@@ -210,58 +201,6 @@ public class AddShopActivity extends AppCompatActivity {
             return false;
         }else {
             return true;
-        }
-    }
-
-    public String getlink(){
-        return urlImage;
-    }
-
-    private void UploadStore(String urlImage) {
-        //String key_store = databaseReference.push().getKey();
-        String name = String.valueOf(etnamestore.getText());
-        String duong = String.valueOf(etaddress.getText());
-        String xa = String.valueOf(spinnerxa.getTag());
-        String huyen = String.valueOf(spinnerhuyen.getTag());
-        String tinh = String.valueOf(spinnertinh.getTag());
-        String userkey = firebaseUser.getUid();
-        String phone = String.valueOf(etphone.getText());
-
-        store = new Store(key_store,name,duong,xa,huyen,tinh,userkey,urlImage,phone);
-        System.out.println(store.toString());
-        databaseReference.child(key_store).setValue(store);
-    }
-
-    private String getUrlImage() {
-        storageReference.child(key_store).child(namefileimage).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                url = uri.toString();
-                System.out.println(url);
-            }
-        });
-        return url;
-    }
-
-    private void uploadImageStore() {
-        if(filePath != null){
-            namefileimage = UUID.randomUUID().toString();
-            storageReference.child(key_store).child(namefileimage).putFile(filePath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    System.out.println("Uploaded Image success");
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    System.out.println("Uploaded Image failed, "+e.getMessage());
-                }
-            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-
-                }
-            });
         }
     }
 
@@ -305,59 +244,72 @@ public class AddShopActivity extends AppCompatActivity {
         }
     }
 
-    class ProgressProcess extends AsyncTask<Void,Integer,String>{
+    public void UploadNewStore(){
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Store is uploading....");
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
 
-        @Override
-        protected String doInBackground(Void... voids) {
-            for (int i=1;i<=100;i++){
-                publishProgress(i);
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+        //upload image store
+        if(filePath != null){
+            namefileimage = UUID.randomUUID().toString();
+            storageReference.child(key_store).child(namefileimage).putFile(filePath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    System.out.println("Uploaded Image success");
+
+                    //get url image
+                    storageReference.child(key_store).child(namefileimage).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            url = uri.toString();
+                            System.out.println("Get image thành công");
+
+                            //upload store
+                            String name = String.valueOf(etnamestore.getText());
+                            String duong = String.valueOf(etaddress.getText());
+                            String xa = String.valueOf(spinnerxa.getTag());
+                            String huyen = String.valueOf(spinnerhuyen.getTag());
+                            String tinh = String.valueOf(spinnertinh.getTag());
+                            String userkey = firebaseUser.getUid();
+                            String phone = String.valueOf(etphone.getText());
+
+                            store = new Store(key_store,name,duong,xa,huyen,tinh,userkey,url,phone);
+                            System.out.println(store.toString());
+                            databaseReference.child(key_store).setValue(store).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    System.out.println("Upload thành công");
+                                    progressDialog.dismiss();
+                                    startActivity(new Intent(AddShopActivity.this,ShopActivity.class));
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    System.out.println("Upload failed, "+e.getMessage());
+                                }
+                            });
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            System.out.println("Get image thất bại, "+e.getMessage());
+                        }
+                    });
                 }
-            }
-            return "Done";
-        }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    System.out.println("Uploaded Image failed, "+e.getMessage());
+                }
+            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
 
-        @Override
-        protected void onPostExecute(String s) {
-            urlImage = getUrlImage();
-            progressDialog.dismiss();
-
-            progress = new ProgressDialog(AddShopActivity.this);
-            progress.setMax(100);
-            progress.setProgress(0);
-            progress.setMessage("Store Uploading...");
-            progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            progress.show();
-            Runnable runnable = new ProcessUploadStore();
-            new Thread(runnable).start();
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            progressDialog.setProgress(values[0]);
+                }
+            });
         }
     }
-    class ProcessUploadStore implements Runnable{
-
-        @Override
-        public void run() {
-            while (i<100){
-                i++;
-                progress.setProgress(i);
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            UploadStore(getUrlImage());
-            startActivity(new Intent(AddShopActivity.this, ShopActivity.class));
-            progress.dismiss();
-        }
-    }
-
 
 }

@@ -83,7 +83,7 @@ public class ProductActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.shop:
-                onBackPressed();
+                startActivity(new Intent(ProductActivity.this,ShopActivity.class));
                 return true;
             case R.id.logout:
                 firebaseAuth.signOut();

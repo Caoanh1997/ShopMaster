@@ -4,8 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -27,6 +27,7 @@ import com.example.caoan.shopmaster.EditFoodActivity;
 import com.example.caoan.shopmaster.Model.Food;
 import com.example.caoan.shopmaster.ProductActivity;
 import com.example.caoan.shopmaster.R;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -54,6 +55,7 @@ public class FoodFragment extends Fragment {
     private FirebaseAuth firebaseAuth;
     private String key;
     private FloatingActionButton fab;
+    private DatabaseReference reference;
 
     public FoodFragment() {
         // Required empty public constructor
@@ -63,7 +65,7 @@ public class FoodFragment extends Fragment {
     public static FoodFragment newInstance(String str) {
         FoodFragment fragment = new FoodFragment();
         Bundle args = new Bundle();
-        args.putString("s",str);
+        args.putString("s", str);
         fragment.setArguments(args);
         return fragment;
     }
@@ -93,36 +95,14 @@ public class FoodFragment extends Fragment {
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser user = firebaseAuth.getCurrentUser();
         firebaseDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference reference = firebaseDatabase.getReference("Product").child(key)
+        reference = firebaseDatabase.getReference("Product").child(key)
                 .child("Food");
-        /*for(int i=0;i<5;i++){
-            String foodID = reference.push().getKey();
-            Food food = new Food(foodID,"Chuoi "+i, "This is banana", "https://cdn1.woolworths.media/content/wowproductimages/medium/306510.jpg", 10000);
-
-            reference.child(foodID).setValue(food);
-        }*/
-        new ProgressBarProcess().execute();
-        foodList = new ArrayList<>();
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    Food food = snapshot.getValue(Food.class);
-                    //System.out.println(food.getName());
-                    foodList.add(food);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+        Load();
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getContext(),isOnline()+" "+String.valueOf(foodList.size()),Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), isOnline() + " " + String.valueOf(foodList.size()), Toast.LENGTH_SHORT).show();
             }
         });
         gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -132,7 +112,7 @@ public class FoodFragment extends Fragment {
                 final String key_food = ((Food) adapterView.getItemAtPosition(i)).getKey();
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle("Choose action");
-                view = getLayoutInflater().inflate(R.layout.product_action_layout,null);
+                view = getLayoutInflater().inflate(R.layout.product_action_layout, null);
                 builder.setView(view);
                 final AlertDialog alertDialog = builder.create();
                 alertDialog.show();
@@ -144,22 +124,32 @@ public class FoodFragment extends Fragment {
                 btndelete.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        DatabaseReference reference = firebaseDatabase.getReference("Product").child(key)
-                                .child("Food");
-
-                        reference.child(key_food).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                System.out.println("Delete food success");
-                            }
-                        });
                         StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(food.getUrlimage());
                         storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
                                 System.out.println("Delete Image Food success");
-                                alertDialog.dismiss();
-                                startActivity(new Intent(getActivity(), ProductActivity.class));
+                                DatabaseReference reference = firebaseDatabase.getReference("Product").child(key)
+                                        .child("Food");
+
+                                reference.child(key_food).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        System.out.println("Delete food success");
+                                        alertDialog.dismiss();
+                                        startActivity(new Intent(getActivity(), ProductActivity.class));
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        System.out.println("Delete food failed, " + e.getMessage());
+                                    }
+                                });
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                System.out.println("Delete Image Food failed, " + e.getMessage());
                             }
                         });
                     }
@@ -168,7 +158,7 @@ public class FoodFragment extends Fragment {
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(getActivity(), EditFoodActivity.class);
-                        intent.putExtra("Food",food);
+                        intent.putExtra("Food", food);
                         startActivity(intent);
                     }
                 });
@@ -179,8 +169,8 @@ public class FoodFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 //startActivity(new Intent(getActivity(), AddFoodActivity.class));
-                PopupMenu popupMenu = new PopupMenu(getContext(),btnaddfood);
-                popupMenu.getMenuInflater().inflate(R.menu.context_menu,popupMenu.getMenu());
+                PopupMenu popupMenu = new PopupMenu(getContext(), btnaddfood);
+                popupMenu.getMenuInflater().inflate(R.menu.context_menu, popupMenu.getMenu());
                 popupMenu.show();
             }
         });
@@ -201,46 +191,37 @@ public class FoodFragment extends Fragment {
         return view;
     }
 
-    class ProgressBarProcess extends AsyncTask<Void,Integer,String> {
-        @Override
-        protected void onPostExecute(String s) {
-            //super.onPostExecute(s);
-            progressBar.setVisibility(View.GONE);
-            gridView.setVisibility(View.VISIBLE);
-            if(foodList == null || foodList.size()==0){
-                Toast.makeText(getContext(),"Chưa có sản phẩm",Toast.LENGTH_SHORT).show();
-            }else {
-                adapter = new FoodAdapter(getContext(),foodList);
+    public void Load() {
+        progressBar.setVisibility(View.VISIBLE);
+        gridView.setVisibility(View.INVISIBLE);
+
+        foodList = new ArrayList<>();
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Food food = snapshot.getValue(Food.class);
+                    foodList.add(food);
+                }
+                adapter = new FoodAdapter(getContext(), foodList);
+                gridView.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.INVISIBLE);
                 gridView.setAdapter(adapter);
             }
-        }
 
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            //super.onProgressUpdate(values);
-            progressBar.setProgress(values[0]);
-        }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
-        @Override
-        protected String doInBackground(Void... voids) {
-            for (int i =0;i<100;i++){
-                publishProgress(i);
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
             }
-            return "Done";
-        }
+        });
     }
 
-    public String isOnline(){
+    public String isOnline() {
         ConnectivityManager manager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = manager.getActiveNetworkInfo();
-        if(networkInfo != null && networkInfo.isConnected()){
+        if (networkInfo != null && networkInfo.isConnected()) {
             return "Online";
-        }else {
+        } else {
             return "Offline";
         }
     }
@@ -248,6 +229,6 @@ public class FoodFragment extends Fragment {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
 //        super.onCreateContextMenu(menu, v, menuInfo);
-        getActivity().getMenuInflater().inflate(R.menu.context_menu,menu);
+        getActivity().getMenuInflater().inflate(R.menu.context_menu, menu);
     }
 }

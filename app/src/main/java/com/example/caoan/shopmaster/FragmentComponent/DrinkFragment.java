@@ -22,10 +22,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.caoan.shopmaster.Adapter.DrinkAdapter;
+import com.example.caoan.shopmaster.Adapter.FoodAdapter;
 import com.example.caoan.shopmaster.AddDrinkActivity;
 import com.example.caoan.shopmaster.EditDrinkActivity;
 import com.example.caoan.shopmaster.Model.Drink;
 import com.example.caoan.shopmaster.Model.Drink;
+import com.example.caoan.shopmaster.Model.Food;
 import com.example.caoan.shopmaster.ProductActivity;
 import com.example.caoan.shopmaster.R;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -57,6 +59,7 @@ public class DrinkFragment extends Fragment {
     private FirebaseStorage firebaseStorage;
     private List<Drink> drinkList;
     private DrinkAdapter adapter;
+    private DatabaseReference reference;
 
     public DrinkFragment() {
         // Required empty public constructor
@@ -95,32 +98,9 @@ public class DrinkFragment extends Fragment {
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser user = firebaseAuth.getCurrentUser();
         firebaseDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference reference = firebaseDatabase.getReference("Product").child(key)
+        reference = firebaseDatabase.getReference("Product").child(key)
                 .child("Drink");
-        /*for(int i=0;i<5;i++){
-            String drinkID = reference.push().getKey();
-            Drink drink = new Drink(drinkID,"Cafe "+i, "This is cafe",
-                    "https://www.chowstatic.com/assets/models/promotions/photos/29495/" +
-                            "original/Arnold-Palmer-lemonade-iced-tea-drink-recipe-chowhound.jpg", 10000);
-            reference.child(drinkID).setValue(drink);
-        }*/
-        new ProgressBarProcess().execute();
-        drinkList = new ArrayList<>();
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    Drink drink = snapshot.getValue(Drink.class);
-                    //System.out.println(drink.getName());
-                    drinkList.add(drink);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+        Load();
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -203,6 +183,31 @@ public class DrinkFragment extends Fragment {
         });
 
         return view;
+    }
+
+    public void Load(){
+        progressBar.setVisibility(View.VISIBLE);
+        gridView.setVisibility(View.INVISIBLE);
+
+        drinkList = new ArrayList<>();
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    Drink drink = snapshot.getValue(Drink.class);
+                    drinkList.add(drink);
+                }
+                adapter = new DrinkAdapter(getContext(),drinkList);
+                gridView.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.INVISIBLE);
+                gridView.setAdapter(adapter);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     class ProgressBarProcess extends AsyncTask<Void,Integer,String> {

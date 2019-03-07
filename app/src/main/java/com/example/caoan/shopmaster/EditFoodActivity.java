@@ -27,6 +27,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,7 +41,7 @@ public class EditFoodActivity extends AppCompatActivity {
     private ImageView imagefood;
     private static int RESULT_CODE=71;
     private Uri filePath;
-    private ProgressDialog progressUploadImage, progressUploadFood;
+    private ProgressDialog progressDialog;
 
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
@@ -68,15 +69,16 @@ public class EditFoodActivity extends AppCompatActivity {
         etdescription = findViewById(R.id.etdescription);
         etprice = findViewById(R.id.etprice);
 
-        btnsave.setEnabled(false);
-        btncancel.setEnabled(false);
+        btnsave.setEnabled(true);
+        btncancel.setEnabled(true);
 
         Intent intent = getIntent();
         food = (Food) intent.getSerializableExtra("Food");
         etnamefood.setText(food.getName());
         etdescription.setText(food.getDescription());
         etprice.setText(String.valueOf(food.getPrice()));
-        new ProcessImage(imagefood).execute(food.getUrlimage());
+        Picasso.get().load(food.getUrlimage()).into(imagefood);
+
         btnchooseImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -88,11 +90,13 @@ public class EditFoodActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if(checkInput(etnamefood) && checkInput(etdescription) && checkInput(etprice)){
                     if(filePath != null && filePath.toString() != food.getUrlimage()){
+                        System.out.println("image mới");
                         deleteOldImageFood();
-                        new ProcessDeleteOldImage().execute();
+                        //new ProcessDeleteOldImage().execute();
                     }else {
+                        System.out.println("image cũ");
                         uploadFood(food.getUrlimage());
-                        new ProcessUploadFood().execute();
+                        //new ProcessUploadFood().execute();
                     }
                 }
             }
@@ -106,12 +110,74 @@ public class EditFoodActivity extends AppCompatActivity {
     }
 
     private void deleteOldImageFood() {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Food Updating....");
+        progressDialog.setIndeterminate(true);
+        progressDialog.show();
+
         firebaseStorage = FirebaseStorage.getInstance();
         StorageReference storageReference = firebaseStorage.getReferenceFromUrl(food.getUrlimage());
         storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 System.out.println("Delete old image success");
+
+                //upload new image food
+                namefile = UUID.randomUUID().toString();
+                firebaseStorage = FirebaseStorage.getInstance();
+                StorageReference storageReference = firebaseStorage.getReference("Product");
+                if(filePath != null){
+                    storageReference.child(getKey_Store()).child("Food").child(namefile).putFile(filePath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            System.out.println("Upload image success");
+
+                            //Get link new image food
+                            firebaseStorage = FirebaseStorage.getInstance();
+                            StorageReference storageReference = firebaseStorage.getReference("Product");
+                            storageReference.child(getKey_Store()).child("Food").child(namefile).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    urlImage = uri.toString();
+                                    System.out.println("Get link success");
+
+                                    //Update food
+                                    firebaseDatabase = FirebaseDatabase.getInstance();
+                                    DatabaseReference databaseReference = firebaseDatabase.getReference("Product").child(getKey_Store()).child("Food");
+                                    String name = String.valueOf(etnamefood.getText());
+                                    String description = String.valueOf(etdescription.getText());
+                                    int price = Integer.parseInt(String.valueOf(etprice.getText()));
+                                    String key = food.getKey();
+                                    Food food = new Food(key,name,description,urlImage,price);
+                                    databaseReference.child(key).setValue(food).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            System.out.println("Upload food success");
+                                            progressDialog.dismiss();
+                                            startActivity(new Intent(EditFoodActivity.this,ProductActivity.class ));
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            System.out.println("Upload image failed, "+e.getMessage());
+                                        }
+                                    });
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    System.out.println("Get link failed, "+e.getMessage());
+                                }
+                            });
+
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            System.out.println("Upload image failed, "+e.getMessage());
+                        }
+                    });
+                }
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -267,6 +333,11 @@ public class EditFoodActivity extends AppCompatActivity {
     }
 
     private void uploadFood(String urlImage) {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Food Updating....");
+        progressDialog.setIndeterminate(true);
+        progressDialog.show();
+
         firebaseDatabase = FirebaseDatabase.getInstance();
         DatabaseReference databaseReference = firebaseDatabase.getReference("Product").child(getKey_Store()).child("Food");
         String name = String.valueOf(etnamefood.getText());
@@ -278,6 +349,13 @@ public class EditFoodActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Void aVoid) {
                 System.out.println("Upload food success");
+                progressDialog.dismiss();
+                startActivity(new Intent(EditFoodActivity.this,ProductActivity.class ));
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                System.out.println("Upload food failed, "+e.getMessage());
             }
         });
     }

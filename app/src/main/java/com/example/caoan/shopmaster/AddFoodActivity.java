@@ -38,7 +38,7 @@ public class AddFoodActivity extends AppCompatActivity {
     private ImageView imagefood;
     private static int RESULT_CODE=71;
     private Uri filePath;
-    private ProgressDialog progressUploadImage, progressUploadFood;
+    private ProgressDialog progressUploadImage, progressUploadFood,progressDialog;
 
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
@@ -64,18 +64,6 @@ public class AddFoodActivity extends AppCompatActivity {
         etnamefood = findViewById(R.id.etnamefood);
         etdescription = findViewById(R.id.etdescription);
         etprice = findViewById(R.id.etprice);
-        progressUploadImage = new ProgressDialog(this);
-        progressUploadImage.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        progressUploadImage.setMax(100);
-        progressUploadImage.setProgress(0);
-        progressUploadImage.setMessage("Uploading image food");
-
-        progressUploadFood = new ProgressDialog(this);
-        progressUploadFood.setMessage("Uploading food");
-        progressUploadFood.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        progressUploadFood.setMax(100);
-        progressUploadFood.setProgress(0);
-
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
 
@@ -97,8 +85,8 @@ public class AddFoodActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if(checkInput(etnamefood) && checkInput(etdescription) && checkInput(etprice) && checkImage(filePath)){
                     uploadImageFood();
-                    progressUploadImage.show();
-                    new ProgressUploadImage().execute();
+                    //progressUploadImage.show();
+                    //new ProgressUploadImage().execute();
                 }
             }
         });
@@ -111,6 +99,12 @@ public class AddFoodActivity extends AppCompatActivity {
     }
 
     private void uploadImageFood() {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Food uploading....");
+        progressDialog.show();
+
+        //upload image food
         if(filePath != null){
             namefile = UUID.randomUUID().toString();
 
@@ -118,6 +112,40 @@ public class AddFoodActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     System.out.println("Upload image food success");
+
+                    //get link image food
+                    storageReference.child(getKey_Store()).child("Food").child(namefile).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            urlImage = uri.toString();
+                            System.out.println("Get link image success");
+
+                            //upload new food
+                            String namefood = String.valueOf(etnamefood.getText());
+                            String description = String.valueOf(etdescription.getText());
+                            String price_str = String.valueOf(etprice.getText());
+                            int price = Integer.parseInt(price_str);
+                            String key_food = databaseReference.push().getKey();
+                            databaseReference.child(key_food).setValue(new Food(key_food,namefood,description,urlImage,price)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    System.out.println("Upload food success");
+                                    progressDialog.dismiss();
+                                    startActivity(new Intent(AddFoodActivity.this,ProductActivity.class));
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    System.out.println("Upload food failed, "+e.getMessage());
+                                }
+                            });
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            System.out.println("Get link image failed");
+                        }
+                    });
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
