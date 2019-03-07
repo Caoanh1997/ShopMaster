@@ -95,7 +95,6 @@ public class OrderAdapter extends ArrayAdapter<Bill> {
                         reference1.child(userID).child(bill.getKey_cart()).removeValue();
                     }
                 });
-
             }
             convertView.setTag(viewHolder);
         }else {

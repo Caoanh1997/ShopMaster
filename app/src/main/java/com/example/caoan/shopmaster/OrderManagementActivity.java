@@ -2,14 +2,12 @@ package com.example.caoan.shopmaster;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -18,9 +16,6 @@ import android.widget.Toast;
 
 import com.example.caoan.shopmaster.Adapter.OrderAdapter;
 import com.example.caoan.shopmaster.Model.Bill;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -55,120 +50,57 @@ public class OrderManagementActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressbar);
 
         SharedPreferences sharedPreferences = getSharedPreferences("Account", Context.MODE_PRIVATE);
-        final String userID = sharedPreferences.getString("userID","");
+        final String userID = sharedPreferences.getString("userID", "");
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference("NewOrder").child(userID);
         Load();
         btsize.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(),String.valueOf(billList.size()),Toast.LENGTH_SHORT).show();
-                /*for(Bill bill : billList){
-                    System.out.println(bill.toString());
-                }*/
-                if(progressBar.getVisibility()==View.INVISIBLE){
-                    progressBar.setVisibility(View.VISIBLE);
-                    //new ProcessGetBill().execute();
-                }
+                Toast.makeText(getApplicationContext(), String.valueOf(billList.size()), Toast.LENGTH_SHORT).show();
                 Load();
             }
         });
-        databaseReference.addChildEventListener(new ChildEventListener() {
+    }
+
+    public void Load() {
+        progressBar.setVisibility(View.VISIBLE);
+        lvOrder.setVisibility(View.INVISIBLE);
+
+        billList = new ArrayList<>();
+        databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                //System.out.println("Data change");
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                billList.clear();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Bill bill = snapshot.getValue(Bill.class);
+                    billList.add(bill);
+                }
+                progressBar.setVisibility(View.INVISIBLE);
+                lvOrder.setVisibility(View.VISIBLE);
+                orderAdapter = new OrderAdapter(OrderManagementActivity.this, billList);
+                lvOrder.setAdapter(orderAdapter);
+                lvOrder.invalidateViews();
+
+                //send notification
                 builder = new NotificationCompat.Builder(getApplicationContext());
                 builder.setAutoCancel(true);
                 builder.setSmallIcon(R.drawable.ic_transport_active);
                 builder.setContentTitle("Thông báo");
                 builder.setContentText("Bạn nhận được đơn hàng mới");
 
-                pendingIntent = PendingIntent.getActivity(getApplicationContext(),0,new Intent(getApplicationContext(),OrderActivity.class),
+                pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, new Intent(getApplicationContext(), ShopActivity.class),
                         PendingIntent.FLAG_UPDATE_CURRENT);
                 notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                 builder.setContentIntent(pendingIntent);
-                notificationManager.notify(notificationId,builder.build());
-                Load();
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
+                notificationManager.notify(notificationId, builder.build());
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
-    }
 
-    class ProcessGetBill extends AsyncTask<Void, Void, Void>{
-        //private ProgressDialog progressDialog;
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            //progressDialog = new ProgressDialog(OrderManagementActivity.this);
-            //progressDialog.setMessage("Đang tải đơn hàng...");
-            //progressDialog.setTitle();
-            //progressDialog.setIndeterminate(true);
-            //progressDialog.show();
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            //progressDialog.dismiss();
-            orderAdapter = new OrderAdapter(OrderManagementActivity.this,billList);
-            //orderAdapter.notifyDataSetChanged();
-            //lvOrder.invalidateViews();
-            lvOrder.setAdapter(orderAdapter);
-            progressBar.setVisibility(View.INVISIBLE);
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            super.onProgressUpdate(values);
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            for(int i=1;i<=100;i++){
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            return null;
-        }
-    }
-    public void Load(){
-        new ProcessGetBill().execute();
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                billList = new ArrayList<>();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    Bill bill = snapshot.getValue(Bill.class);
-                    System.out.println(bill.toString());
-                    billList.add(bill);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
         });
     }
 }

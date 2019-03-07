@@ -53,68 +53,29 @@ public class DeliveredActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Toast.makeText(getApplicationContext(),String.valueOf(billList.size()),Toast.LENGTH_SHORT).show();
-                /*for(Bill bill : billList){
-                    System.out.println(bill.toString());
-                }*/
-                if(progressBar.getVisibility()==View.INVISIBLE){
-                    progressBar.setVisibility(View.VISIBLE);
-                    //new ProcessGetBill().execute();
-                }
                 Load();
             }
         });
     }
 
-    class ProcessGetBill extends AsyncTask<Void, Void, Void> {
-        private ProgressDialog progressDialog;
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            //progressDialog = new ProgressDialog(DeliveredActivity.this);
-            //progressDialog.setMessage("Đang tải đơn hàng...");
-            //progressDialog.setTitle();
-            //progressDialog.setIndeterminate(true);
-            //progressDialog.show();
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            //progressDialog.dismiss();
-            deliveredAdapter = new DeliveredAdapter(DeliveredActivity.this,billList);
-            //deliveredAdapter.notifyDataSetChanged();
-            //lvOrder.invalidateViews();
-            lvOrder.setAdapter(deliveredAdapter);
-            progressBar.setVisibility(View.INVISIBLE);
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            super.onProgressUpdate(values);
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            for(int i=1;i<=100;i++){
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            return null;
-        }
-    }
     public void Load(){
-        new ProcessGetBill().execute();
+        progressBar.setVisibility(View.VISIBLE);
+        lvOrder.setVisibility(View.INVISIBLE);
+        billList = new ArrayList<>();
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                billList = new ArrayList<>();
+                billList.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()){
                     Bill bill = snapshot.getValue(Bill.class);
                     System.out.println(bill.toString());
                     billList.add(bill);
                 }
+                progressBar.setVisibility(View.INVISIBLE);
+                lvOrder.setVisibility(View.VISIBLE);
+                deliveredAdapter = new DeliveredAdapter(DeliveredActivity.this,billList);
+                lvOrder.setAdapter(deliveredAdapter);
+                lvOrder.invalidateViews();
             }
 
             @Override
