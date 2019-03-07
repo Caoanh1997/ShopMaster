@@ -20,12 +20,14 @@ public class OrderActivity extends TabActivity {
 
         tabHost = findViewById(android.R.id.tabhost);
         tabHost.setup();
-        tabHost.addTab(tabHost.newTabSpec("tab1").setIndicator("Xác nhận")
+        view = getLayoutInflater().inflate(R.layout.neworder_tabwidget_layout,null);
+        tabHost.addTab(tabHost.newTabSpec("tab1").setIndicator(view)
                 .setContent(new Intent(this,OrderManagementActivity.class)));
         view = getLayoutInflater().inflate(R.layout.transport_tabwidget_layout,null);
         tabHost.addTab(tabHost.newTabSpec("tab2").setIndicator(view)
                 .setContent(new Intent(this,TransportActivity.class)));
-        tabHost.addTab(tabHost.newTabSpec("tab3").setIndicator("Đã giao")
+        view = getLayoutInflater().inflate(R.layout.delivered_tabwidget_layout,null);
+        tabHost.addTab(tabHost.newTabSpec("tab3").setIndicator(view)
                 .setContent(new Intent(this,DeliveredActivity.class)));
 //        tabHost.addTab(tabHost.newTabSpec("tab4").setIndicator("Đã giao")
 //                .setContent(new Intent(this,DeliveredActivity.class)));

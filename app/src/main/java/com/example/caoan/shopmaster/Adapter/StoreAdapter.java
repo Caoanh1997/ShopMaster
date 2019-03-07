@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.example.caoan.shopmaster.Model.Store;
 import com.example.caoan.shopmaster.R;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -130,7 +131,7 @@ public class StoreAdapter extends ArrayAdapter<Store> {
         }
         Store store = getItem(position);
         if(store != null){
-            new ProcessingImage(viewHolder.imageView).execute(store.getUrlImage());
+            Picasso.get().load(store.getUrlImage()).into(viewHolder.imageView);
             viewHolder.tvname.setText(store.getName());
             viewHolder.tvaddress.setText(store.getDuong()+", "+ store.getXa()+"-"+store.getHuyen()+"-"+store.getTinh());
             viewHolder.tvphone.setText("Phone: "+store.getPhone());
@@ -142,39 +143,6 @@ public class StoreAdapter extends ArrayAdapter<Store> {
     class ViewHolder{
         private ImageView imageView;
         private TextView tvname, tvaddress, tvphone;
-    }
-
-    class ProcessingImage extends AsyncTask<String,Void,Bitmap>{
-
-        private ImageView imageView;
-
-        public ProcessingImage(ImageView imageView) {
-            this.imageView = imageView;
-        }
-
-        @Override
-        protected Bitmap doInBackground(String... voids) {
-            Bitmap bitmap = null;
-            String url = voids[0];
-
-            try {
-                InputStream inputStream = new URL(url).openStream();
-                bitmap = BitmapFactory.decodeStream(inputStream);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return bitmap;
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            imageView.setImageBitmap(bitmap);
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            super.onProgressUpdate(values);
-        }
     }
 
 }

@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.example.caoan.shopmaster.Model.Drink;
 import com.example.caoan.shopmaster.R;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,7 +48,7 @@ public class DrinkAdapter extends ArrayAdapter<Drink> {
         }
         Drink drink = getItem(position);
         if(drink != null){
-            new DownloadImage(viewHolder.imageView).execute(drink.getUrlimage());
+            Picasso.get().load(drink.getUrlimage()).into(viewHolder.imageView);
             viewHolder.tvname.setText(drink.getName());
             viewHolder.tvprice.setText(String.valueOf(drink.getPrice())+" d");
         }
@@ -58,34 +59,5 @@ public class DrinkAdapter extends ArrayAdapter<Drink> {
     class ViewHolder{
         ImageView imageView;
         TextView tvname,tvprice;
-    }
-    class DownloadImage extends AsyncTask<String,Void,Bitmap>{
-
-        private ImageView imageView;
-
-        public DownloadImage(ImageView imageView) {
-            this.imageView = imageView;
-        }
-
-        @Override
-        protected Bitmap doInBackground(String... strings) {
-            Bitmap bitmap=null;
-            try {
-                URL url = new URL(strings[0]);
-                InputStream inputStream = url.openStream();
-                bitmap = BitmapFactory.decodeStream(inputStream);
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return bitmap;
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-//            super.onPostExecute(bitmap);
-            imageView.setImageBitmap(bitmap);
-        }
     }
 }

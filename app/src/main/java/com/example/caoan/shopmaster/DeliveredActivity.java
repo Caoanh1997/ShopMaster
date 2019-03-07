@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.caoan.shopmaster.Adapter.DeliveredAdapter;
@@ -31,6 +32,7 @@ public class DeliveredActivity extends AppCompatActivity {
     private DatabaseReference databaseReference;
     private ListView lvOrder;
     private Button btsize;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,29 +41,14 @@ public class DeliveredActivity extends AppCompatActivity {
 
         lvOrder = findViewById(R.id.lvorder);
         btsize = findViewById(R.id.btsize);
+        progressBar = findViewById(R.id.progressbar);
 
         SharedPreferences sharedPreferences = getSharedPreferences("Account", Context.MODE_PRIVATE);
         final String userID = sharedPreferences.getString("userID","");
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference("Delivered").child(userID);
-        billList = new ArrayList<>();
 
-        new ProcessGetBill().execute();
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    Bill bill = snapshot.getValue(Bill.class);
-                    System.out.println(bill.toString());
-                    billList.add(bill);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+        Load();
         btsize.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -69,6 +56,11 @@ public class DeliveredActivity extends AppCompatActivity {
                 /*for(Bill bill : billList){
                     System.out.println(bill.toString());
                 }*/
+                if(progressBar.getVisibility()==View.INVISIBLE){
+                    progressBar.setVisibility(View.VISIBLE);
+                    //new ProcessGetBill().execute();
+                }
+                Load();
             }
         });
     }
@@ -78,18 +70,21 @@ public class DeliveredActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressDialog = new ProgressDialog(DeliveredActivity.this);
-            progressDialog.setMessage("Đang tải đơn hàng...");
+            //progressDialog = new ProgressDialog(DeliveredActivity.this);
+            //progressDialog.setMessage("Đang tải đơn hàng...");
             //progressDialog.setTitle();
-            progressDialog.setIndeterminate(true);
-            progressDialog.show();
+            //progressDialog.setIndeterminate(true);
+            //progressDialog.show();
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            progressDialog.dismiss();
+            //progressDialog.dismiss();
             deliveredAdapter = new DeliveredAdapter(DeliveredActivity.this,billList);
+            //deliveredAdapter.notifyDataSetChanged();
+            //lvOrder.invalidateViews();
             lvOrder.setAdapter(deliveredAdapter);
+            progressBar.setVisibility(View.INVISIBLE);
         }
 
         @Override
@@ -108,5 +103,24 @@ public class DeliveredActivity extends AppCompatActivity {
             }
             return null;
         }
+    }
+    public void Load(){
+        new ProcessGetBill().execute();
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                billList = new ArrayList<>();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    Bill bill = snapshot.getValue(Bill.class);
+                    System.out.println(bill.toString());
+                    billList.add(bill);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 }

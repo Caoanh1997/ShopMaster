@@ -82,10 +82,20 @@
             android:textStyle="bold"/>
 
     </LinearLayout>
-    <ListView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="350dp"
-        android:id="@+id/lvorder"
-        >
-    </ListView>
+        android:layout_height="wrap_content">
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="350dp"
+            android:id="@+id/lvorder"
+            >
+        </ListView>
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/progressbar"
+            android:layout_centerInParent="true"/>
+    </RelativeLayout>
+
 </LinearLayout>

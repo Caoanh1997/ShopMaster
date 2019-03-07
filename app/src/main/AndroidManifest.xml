@@ -56,6 +56,11 @@
         <activity android:name=".TransportActivity" />
         <activity android:name=".DeliveredActivity" />
         <activity android:name=".OrderActivity"></activity>
+        <receiver android:name=".Broadcast.GetNotification">
+            <intent-filter>
+                <action android:name="getNotification.Broadcast"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

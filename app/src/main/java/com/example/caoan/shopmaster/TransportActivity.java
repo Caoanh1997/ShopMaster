@@ -47,24 +47,8 @@ public class TransportActivity extends AppCompatActivity {
         final String userID = sharedPreferences.getString("userID","");
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference("Transport").child(userID);
-        billList = new ArrayList<>();
 
-        new ProcessGetBill().execute();
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    Bill bill = snapshot.getValue(Bill.class);
-                    System.out.println(bill.toString());
-                    billList.add(bill);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+        Load();
         btsize.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -72,6 +56,11 @@ public class TransportActivity extends AppCompatActivity {
                 /*for(Bill bill : billList){
                     System.out.println(bill.toString());
                 }*/
+                if(progressBar.getVisibility()==View.INVISIBLE){
+                    progressBar.setVisibility(View.VISIBLE);
+                    //new ProcessGetBill().execute();
+                }
+                Load();
             }
         });
     }
@@ -93,6 +82,8 @@ public class TransportActivity extends AppCompatActivity {
             //progressDialog.dismiss();
             progressBar.setVisibility(View.INVISIBLE);
             transportAdapter = new TransportAdapter(TransportActivity.this,billList);
+            //transportAdapter.notifyDataSetChanged();
+            //lvOrder.invalidateViews();
             lvOrder.setAdapter(transportAdapter);
         }
 
@@ -112,5 +103,24 @@ public class TransportActivity extends AppCompatActivity {
             }
             return null;
         }
+    }
+    public void Load(){
+        new ProcessGetBill().execute();
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                billList = new ArrayList<>();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    Bill bill = snapshot.getValue(Bill.class);
+                    System.out.println(bill.toString());
+                    billList.add(bill);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 }

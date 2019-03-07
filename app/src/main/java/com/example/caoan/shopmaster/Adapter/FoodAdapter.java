@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.example.caoan.shopmaster.Model.Food;
 import com.example.caoan.shopmaster.R;
+import com.squareup.picasso.Picasso;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -54,7 +55,7 @@ public class FoodAdapter extends ArrayAdapter<Food> {
         if(food != null){
             viewHolder.tvname.setText(food.getName());
             viewHolder.tvprice.setText(String.valueOf(food.getPrice())+" d");
-            new Processing(viewHolder.imageView).execute(food.getUrlimage());
+            Picasso.get().load(food.getUrlimage()).into(viewHolder.imageView);
         }
 
         return convertView;
@@ -64,38 +65,7 @@ public class FoodAdapter extends ArrayAdapter<Food> {
         ImageView imageView;
         TextView tvname,tvprice;
     }
-    private class Processing extends AsyncTask<String,Void,Bitmap>{
-        ImageView imageView;
 
-        public Processing(ImageView imageView) {
-            this.imageView = imageView;
-        }
-
-        @Override
-        protected Bitmap doInBackground(String... strings) {
-            Bitmap bitmap = null;
-            String urlString = strings[0];
-            try {
-                URL url = new URL(urlString);
-                InputStream inputStream = url.openStream();
-                bitmap = BitmapFactory.decodeStream(inputStream);
-            } catch (java.io.IOException e) {
-                e.printStackTrace();
-            }
-            return bitmap;
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-//            super.onPostExecute(bitmap);
-            imageView.setImageBitmap(bitmap);
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            super.onProgressUpdate(values);
-        }
-    }
     private Filter filter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence charSequence) {

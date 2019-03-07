@@ -73,31 +73,9 @@ public class ShopActivity extends AppCompatActivity {
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
-        storeList = new ArrayList<>();
-        final FirebaseUser user = firebaseAuth.getCurrentUser();
-        if(user != null){
-            tvuserid.setText(user.getUid());
-            firebaseDatabase = FirebaseDatabase.getInstance();
-            DatabaseReference reference = firebaseDatabase.getReference("Store");
 
-            new ProgressBarProcess().execute();
-            reference.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                        Store store = snapshot.getValue(Store.class);
-                        if(store.getUserkey().equals(user.getUid())){
-                            storeList.add(store);
-                        }
-                    }
-                }
+        Load();
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-        }
         lvstore.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -143,8 +121,8 @@ public class ShopActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),"About",Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.refresh:
-                finish();
-                startActivity(getIntent());
+                storeList.clear();
+                Load();
                 return true;
             case R.id.manage:
                 startActivity(new Intent(this,OrderActivity.class));
@@ -170,33 +148,34 @@ public class ShopActivity extends AppCompatActivity {
         super.onStart();
     }
 
-    class ProgressBarProcess extends AsyncTask<Void,Integer,String> {
-        @Override
-        protected void onPostExecute(String s) {
-            //super.onPostExecute(s);
-            progressBar.setVisibility(View.GONE);
-            lvstore.setVisibility(View.VISIBLE);
-            adapter = new StoreAdapter(ShopActivity.this,storeList);
-            lvstore.setAdapter(adapter);
-        }
+    public void Load(){
+        storeList = new ArrayList<>();
+        final FirebaseUser user = firebaseAuth.getCurrentUser();
+        if(user != null){
+            tvuserid.setText(user.getUid());
+            firebaseDatabase = FirebaseDatabase.getInstance();
+            DatabaseReference reference = firebaseDatabase.getReference("Store");
 
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            //super.onProgressUpdate(values);
-            progressBar.setProgress(values[0]);
-        }
-
-        @Override
-        protected String doInBackground(Void... voids) {
-            for (int i =0;i<100;i++){
-                publishProgress(i);
-                try {
-                    Thread.sleep(80);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+            reference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                        Store store = snapshot.getValue(Store.class);
+                        if(store.getUserkey().equals(user.getUid())){
+                            storeList.add(store);
+                        }
+                    }
+                    progressBar.setVisibility(View.GONE);
+                    lvstore.setVisibility(View.VISIBLE);
+                    adapter = new StoreAdapter(getApplicationContext(),storeList);
+                    lvstore.setAdapter(adapter);
                 }
-            }
-            return "Done";
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
         }
     }
 
