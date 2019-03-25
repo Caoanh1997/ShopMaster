@@ -248,7 +248,7 @@ public class AddShopActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Store is uploading....");
         progressDialog.setIndeterminate(true);
-        progressDialog.setCancelable(false);
+        progressDialog.setCancelable(true);
         progressDialog.show();
 
         //upload image store

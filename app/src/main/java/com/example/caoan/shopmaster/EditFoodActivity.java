@@ -113,6 +113,7 @@ public class EditFoodActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Food Updating....");
         progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(true);
         progressDialog.show();
 
         firebaseStorage = FirebaseStorage.getInstance();

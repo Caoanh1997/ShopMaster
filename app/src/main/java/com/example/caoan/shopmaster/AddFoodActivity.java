@@ -100,6 +100,7 @@ public class AddFoodActivity extends AppCompatActivity {
 
     private void uploadImageFood() {
         progressDialog = new ProgressDialog(this);
+        progressDialog.setCancelable(true);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Food uploading....");
         progressDialog.show();

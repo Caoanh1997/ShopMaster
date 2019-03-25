@@ -444,7 +444,7 @@ public class EditShopActivity extends AppCompatActivity {
     }
     public void deleteOldImageStorage(){
         progressDialog = new ProgressDialog(this);
-        progressDialog.setCancelable(false);
+        progressDialog.setCancelable(true);
         progressDialog.setMessage("Store Updating....");
         progressDialog.setIndeterminate(true);
         progressDialog.show();
