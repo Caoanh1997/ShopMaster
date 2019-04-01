@@ -71,6 +71,9 @@ public class ProductActivity extends AppCompatActivity {
                 viewPager.setCurrentItem(tabHost.getCurrentTab());
             }
         });
+        Intent intent = getIntent();
+        int tab = intent.getIntExtra("tab",0);
+        viewPager.setCurrentItem(tab);
     }
 
     @Override

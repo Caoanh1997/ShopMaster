@@ -1,6 +1,7 @@
 package com.example.caoan.shopmaster.FragmentComponent;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -109,9 +110,9 @@ public class DrinkFragment extends Fragment {
             }
         });
 
-        gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 final Drink drink = (Drink) adapterView.getItemAtPosition(i);
                 final String key_drink = ((Drink) adapterView.getItemAtPosition(i)).getKey();
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -128,35 +129,51 @@ public class DrinkFragment extends Fragment {
                 btndelete.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        DatabaseReference reference = firebaseDatabase.getReference("Product").child(key)
-                                .child("Drink");
+                        alertDialog.dismiss();
+                        new AlertDialog.Builder(getContext())
+                                .setTitle("Warning").setMessage("Are you sure delete this product?")
+                                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(final DialogInterface dialogInterface, int i) {
+                                        DatabaseReference reference = firebaseDatabase.getReference("Product").child(key)
+                                                .child("Drink");
 
-                        reference.child(key_drink).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        reference.child(key_drink).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                System.out.println("Delete drink success");
+                                            }
+                                        });
+                                        StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(drink.getUrlimage());
+                                        storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                System.out.println("Delete Image Drink success");
+                                                dialogInterface.dismiss();
+                                                drinkList.clear();
+                                                Load();
+                                                /*startActivity(new Intent(getActivity(), ProductActivity.class)
+                                                .putExtra("tab",1));*/
+                                            }
+                                        });
+                                    }
+                                }).setNegativeButton("No", new DialogInterface.OnClickListener() {
                             @Override
-                            public void onSuccess(Void aVoid) {
-                                System.out.println("Delete drink success");
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
                             }
-                        });
-                        StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(drink.getUrlimage());
-                        storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                System.out.println("Delete Image Drink success");
-                                alertDialog.dismiss();
-                                startActivity(new Intent(getActivity(), ProductActivity.class));
-                            }
-                        });
+                        }).create().show();
                     }
                 });
                 btnedit.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        alertDialog.dismiss();
                         Intent intent = new Intent(getActivity(), EditDrinkActivity.class);
                         intent.putExtra("Drink",drink);
                         startActivity(intent);
                     }
                 });
-                return false;
             }
         });
         btnadddrink.setOnClickListener(new View.OnClickListener() {
@@ -172,13 +189,6 @@ public class DrinkFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(getActivity(), AddDrinkActivity.class));
-            }
-        });
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Drink drink = (Drink) adapterView.getItemAtPosition(i);
-                //Toast.makeText(getContext(),drink.toString(),Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -201,6 +211,7 @@ public class DrinkFragment extends Fragment {
                 gridView.setVisibility(View.VISIBLE);
                 progressBar.setVisibility(View.INVISIBLE);
                 gridView.setAdapter(adapter);
+                gridView.invalidateViews();
             }
 
             @Override

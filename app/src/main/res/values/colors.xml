@@ -12,4 +12,7 @@
     <color name="blue">#0738ec</color>
     <color name="pink">#ec07a0</color>
     <color name="xam">#6e6a6d</color>
+    <color name="tomato">#9508d1</color>
+    <color name="background">#dddddd</color>
+    <color name="bgBottomNavigation">#fe485a</color>
 </resources>

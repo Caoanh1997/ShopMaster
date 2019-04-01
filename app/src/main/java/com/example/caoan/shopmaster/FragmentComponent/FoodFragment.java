@@ -1,6 +1,7 @@
 package com.example.caoan.shopmaster.FragmentComponent;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -105,7 +106,84 @@ public class FoodFragment extends Fragment {
                 Toast.makeText(getContext(), isOnline() + " " + String.valueOf(foodList.size()), Toast.LENGTH_SHORT).show();
             }
         });
-        gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                final Food food = (Food) adapterView.getItemAtPosition(i);
+                final String key_food = ((Food) adapterView.getItemAtPosition(i)).getKey();
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("Choose action");
+                view = getLayoutInflater().inflate(R.layout.product_action_layout, null);
+                builder.setView(view);
+                final AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+
+                FloatingActionButton btnedit, btndelete;
+                btnedit = view.findViewById(R.id.btnedit);
+                btndelete = view.findViewById(R.id.btndelete);
+
+                btndelete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        alertDialog.dismiss();
+                        new AlertDialog.Builder(getContext())
+                                .setTitle("Warning").setMessage("Are you sure delete this product?")
+                                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(final DialogInterface dialogInterface, int i) {
+                                        StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(food.getUrlimage());
+                                        storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                System.out.println("Delete Image Food success");
+                                                DatabaseReference reference = firebaseDatabase.getReference("Product").child(key)
+                                                        .child("Food");
+
+                                                reference.child(key_food).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        System.out.println("Delete food success");
+                                                        dialogInterface.dismiss();
+                                                        foodList.clear();
+                                                        Load();
+                                                        //startActivity(new Intent(getActivity(), ProductActivity.class));
+                                                    }
+                                                }).addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        System.out.println("Delete food failed, " + e.getMessage());
+                                                    }
+                                                });
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                System.out.println("Delete Image Food failed, " + e.getMessage());
+                                            }
+                                        });
+                                    }
+                                }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        }).create().show();
+                    }
+                });
+                btnedit.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        alertDialog.dismiss();
+                        Intent intent = new Intent(getActivity(), EditFoodActivity.class);
+                        intent.putExtra("Food", food);
+                        startActivity(intent);
+                    }
+                });
+            }
+        });
+
+        /*gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 final Food food = (Food) adapterView.getItemAtPosition(i);
@@ -124,34 +202,50 @@ public class FoodFragment extends Fragment {
                 btndelete.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(food.getUrlimage());
-                        storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                System.out.println("Delete Image Food success");
-                                DatabaseReference reference = firebaseDatabase.getReference("Product").child(key)
-                                        .child("Food");
+                        new AlertDialog.Builder(getContext())
+                                .setTitle("Warning").setMessage("Are you sure delete this product?")
+                                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(food.getUrlimage());
+                                        storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                System.out.println("Delete Image Food success");
+                                                DatabaseReference reference = firebaseDatabase.getReference("Product").child(key)
+                                                        .child("Food");
 
-                                reference.child(key_food).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        System.out.println("Delete food success");
-                                        alertDialog.dismiss();
-                                        startActivity(new Intent(getActivity(), ProductActivity.class));
+                                                reference.child(key_food).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        System.out.println("Delete food success");
+                                                        alertDialog.dismiss();
+                                                        startActivity(new Intent(getActivity(), ProductActivity.class));
+                                                    }
+                                                }).addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        System.out.println("Delete food failed, " + e.getMessage());
+                                                    }
+                                                });
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                System.out.println("Delete Image Food failed, " + e.getMessage());
+                                            }
+                                        });
+                                        foodList.clear();
+                                        Load();
+                                        dialogInterface.dismiss();
                                     }
-                                }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        System.out.println("Delete food failed, " + e.getMessage());
-                                    }
-                                });
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
+                                }).setNegativeButton("No", new DialogInterface.OnClickListener() {
                             @Override
-                            public void onFailure(@NonNull Exception e) {
-                                System.out.println("Delete Image Food failed, " + e.getMessage());
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
                             }
-                        });
+                        }).create().show();
+
                     }
                 });
                 btnedit.setOnClickListener(new View.OnClickListener() {
@@ -164,7 +258,7 @@ public class FoodFragment extends Fragment {
                 });
                 return false;
             }
-        });
+        });*/
         btnaddfood.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -178,13 +272,6 @@ public class FoodFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(getActivity(), AddFoodActivity.class));
-            }
-        });
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Food food = (Food) adapterView.getItemAtPosition(i);
-                //Toast.makeText(getContext(),food.toString(),Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -207,6 +294,7 @@ public class FoodFragment extends Fragment {
                 gridView.setVisibility(View.VISIBLE);
                 progressBar.setVisibility(View.INVISIBLE);
                 gridView.setAdapter(adapter);
+                gridView.invalidateViews();
             }
 
             @Override

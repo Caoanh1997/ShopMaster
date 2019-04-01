@@ -37,9 +37,9 @@ public class DrinkAdapter extends ArrayAdapter<Drink> {
         ViewHolder viewHolder;
         if (convertView == null){
             viewHolder = new ViewHolder();
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.drink_item_layout,parent,false);
-            viewHolder.imageView = convertView.findViewById(R.id.imagedrink);
-            viewHolder.tvname = convertView.findViewById(R.id.tvdrink);
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.food_item_layout,parent,false);
+            viewHolder.imageView = convertView.findViewById(R.id.imagefood);
+            viewHolder.tvname = convertView.findViewById(R.id.tvname);
             viewHolder.tvprice = convertView.findViewById(R.id.tvprice);
 
             convertView.setTag(viewHolder);

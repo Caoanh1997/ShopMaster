@@ -51,6 +51,7 @@ public class AddDrinkActivity extends AppCompatActivity {
 
     private String namefile;
     private String urlImage;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,8 +98,6 @@ public class AddDrinkActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if(checkInput(etnamedrink) && checkInput(etdescription) && checkInput(etprice) && checkImage(filePath)){
                     uploadImageDrink();
-                    progressUploadImage.show();
-                    new ProgressUploadImage().execute();
                 }
             }
         });
@@ -111,6 +110,12 @@ public class AddDrinkActivity extends AppCompatActivity {
     }
 
     private void uploadImageDrink() {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setCancelable(true);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Drink uploading....");
+        progressDialog.show();
+
         if(filePath != null){
             namefile = UUID.randomUUID().toString();
 
@@ -118,6 +123,40 @@ public class AddDrinkActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     System.out.println("Upload image drink success");
+
+                    //get link image drink
+                    storageReference.child(getKey_Store()).child("Drink").child(namefile).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            urlImage = uri.toString();
+                            System.out.println("Get link image success");
+
+                            //upload new drink
+                            String namedrink = String.valueOf(etnamedrink.getText());
+                            String description = String.valueOf(etdescription.getText());
+                            String price_str = String.valueOf(etprice.getText());
+                            int price = Integer.parseInt(price_str);
+                            String key_drink = databaseReference.push().getKey();
+                            databaseReference.child(key_drink).setValue(new Drink(key_drink,namedrink,description,getUrlImage(),price)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    System.out.println("Upload drink success");
+                                    startActivity(new Intent(AddDrinkActivity.this,ProductActivity.class).putExtra("tab",1));
+                                    progressDialog.dismiss();
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    System.out.println("Upload drink failed, "+e.getMessage());
+                                }
+                            });
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            System.out.println("Get link image failed");
+                        }
+                    });
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -164,77 +203,6 @@ public class AddDrinkActivity extends AppCompatActivity {
         key = sharedPreferences.getString("key","");
 
         return key;
-    }
-    class ProgressUploadImage extends AsyncTask<Void, Integer, Void> {
-
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            for (int i=0;i<100;i++){
-                publishProgress(i);
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            progressUploadImage.dismiss();
-            String str = getUrlImage();
-            progressUploadDrink.show();
-            new ProgressUploadDrink().execute();
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            progressUploadImage.setProgress(values[0]);
-        }
-    }
-
-    class ProgressUploadDrink extends AsyncTask<Void, Integer, Void>{
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            for (int i=0;i<100;i++){
-                publishProgress(i);
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            uploadDrink();
-            progressUploadDrink.dismiss();
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            progressUploadDrink.setProgress(values[0]);
-        }
-    }
-
-    private void uploadDrink() {
-        String namedrink = String.valueOf(etnamedrink.getText());
-        String description = String.valueOf(etdescription.getText());
-        String price_str = String.valueOf(etprice.getText());
-        int price = Integer.parseInt(price_str);
-        String key_drink = databaseReference.push().getKey();
-        databaseReference.child(key_drink).setValue(new Drink(key_drink,namedrink,description,getUrlImage(),price)).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                System.out.println("Upload drink success");
-            }
-        });
-        startActivity(new Intent(AddDrinkActivity.this,ProductActivity.class));
     }
 
     public String getUrlImage() {

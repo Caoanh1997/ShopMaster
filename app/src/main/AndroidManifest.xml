@@ -55,12 +55,18 @@
         <activity android:name=".OrderManagementActivity" />
         <activity android:name=".TransportActivity" />
         <activity android:name=".DeliveredActivity" />
-        <activity android:name=".OrderActivity"></activity>
+        <activity android:name=".OrderActivity" />
+
         <receiver android:name=".Broadcast.GetNotification">
             <intent-filter>
-                <action android:name="getNotification.Broadcast"/>
+                <action android:name="getNotification.Broadcast" />
             </intent-filter>
         </receiver>
+
+        <service
+            android:name=".Service.DeleteProduct"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

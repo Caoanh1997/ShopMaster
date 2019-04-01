@@ -28,6 +28,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.example.caoan.shopmaster.Model.Account;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -36,15 +38,14 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.tomer.fadingtextview.FadingTextView;
 
-import java.util.concurrent.TimeUnit;
+import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private Button btsignin, btsignup, btsignout;
+    private CircularProgressButton btsignin, btsignup;
     private EditText etemail, etpassword, etname, etaddress, etphone;
-    private TextView tvuserid, tvsignup, tvsignin;
+    private TextView tvsignup, tvsignin;
     private FirebaseAuth firebaseAuth;
     private Animation animation;
     private FirebaseDatabase firebaseDatabase;
@@ -54,7 +55,6 @@ public class LoginActivity extends AppCompatActivity {
     private String[] huyen;
     private String[] xa;
     private Spinner spinnertinh, spinnerhuyen, spinnerxa;
-    private FadingTextView fadingTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,73 +63,34 @@ public class LoginActivity extends AppCompatActivity {
 
         btsignin = findViewById(R.id.btsignin);
         btsignup = findViewById(R.id.btsignup);
-        btsignout = findViewById(R.id.btsignout);
         etemail = findViewById(R.id.etemail);
         etpassword = findViewById(R.id.etpassword);
         etname = findViewById(R.id.etname);
         etaddress = findViewById(R.id.etaddress);
         etphone = findViewById(R.id.etphone);
-        tvuserid = findViewById(R.id.tvuserid);
         tvsignup = findViewById(R.id.tvsignup);
         tvsignin = findViewById(R.id.tvsignin);
         lospinner = findViewById(R.id.spinner);
         spinnertinh = findViewById(R.id.spinnertinh);
         spinnerhuyen = findViewById(R.id.spinnerhuyen);
         spinnerxa = findViewById(R.id.spinnerxa);
-        fadingTextView = findViewById(R.id.tv);
-
-        String[] arr = {"Tài khoản","Login","Hello"};
-        fadingTextView.setTexts(arr);
-        fadingTextView.setTimeout(500, TimeUnit.MILLISECONDS);
-
-//        Slide slide = new Slide(); sdkmin = 21
-//        slide.setDuration(1500);
-//        getWindow().setExitTransition(slide);
 
         spinnerhuyen.setVisibility(View.INVISIBLE);
         spinnerxa.setVisibility(View.INVISIBLE);
 
-        fillSpinner();
+        firebaseAuth = FirebaseAuth.getInstance();
 
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setIndeterminate(true);
+        fillSpinner();
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         final DatabaseReference databaseReference = firebaseDatabase.getReference("Account");
 
-        animation = new AnimationUtils().loadAnimation(getApplicationContext(), R.anim.fade_out);
-
-        final ObjectAnimator objectAnimator = (ObjectAnimator) AnimatorInflater.loadAnimator(this, R.animator.fade_out_animator);
-        final ObjectAnimator objectAnimator1 = (ObjectAnimator) AnimatorInflater.loadAnimator(this, R.animator.fade_out_animator);
-        final ObjectAnimator objectAnimator2 = (ObjectAnimator) AnimatorInflater.loadAnimator(this, R.animator.object_animator_ex);
-        final ObjectAnimator objectAnimator3 = (ObjectAnimator) AnimatorInflater.loadAnimator(this, R.animator.move_left_animator);
-        final ObjectAnimator objectAnimator4 = (ObjectAnimator) AnimatorInflater.loadAnimator(this, R.animator.move_right_animator);
-        final ObjectAnimator objectAnimator5 = (ObjectAnimator) AnimatorInflater.loadAnimator(this, R.animator.move_left_animator);
-        final ObjectAnimator objectAnimator6 = (ObjectAnimator) AnimatorInflater.loadAnimator(this, R.animator.move_up_animator);
-
-        final ObjectAnimator objectAnimator9 = (ObjectAnimator) AnimatorInflater.loadAnimator(this, R.animator.move_up_animator);
-        final ObjectAnimator objectAnimator10 = (ObjectAnimator) AnimatorInflater.loadAnimator(this, R.animator.move_up_animator);
-        final ObjectAnimator objectAnimator11 = (ObjectAnimator) AnimatorInflater.loadAnimator(this, R.animator.move_up_animator);
-
-        objectAnimator.setTarget(tvsignup);
-        objectAnimator1.setTarget(btsignin);
-        objectAnimator2.setTarget(tvsignup);
-        objectAnimator3.setTarget(etname);
-        objectAnimator11.setTarget(lospinner);
-        objectAnimator4.setTarget(etaddress);
-        objectAnimator5.setTarget(etphone);
-        objectAnimator6.setTarget(btsignup);
-
-        objectAnimator9.setTarget(etemail);
-        objectAnimator10.setTarget(etpassword);
-
         tvsignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Snackbar.make(tvsignup,"Đăng ký",Snackbar.LENGTH_SHORT).setAction("Action",null).show();
-                btsignin.startAnimation(animation);
-                btsignin.setEnabled(false);
                 btsignin.setVisibility(View.GONE);
+                tvsignup.setVisibility(View.GONE);
+
                 etname.setVisibility(View.VISIBLE);
                 lospinner.setVisibility(View.VISIBLE);
                 etaddress.setVisibility(View.VISIBLE);
@@ -137,29 +98,25 @@ public class LoginActivity extends AppCompatActivity {
                 btsignup.setVisibility(View.VISIBLE);
                 tvsignin.setVisibility(View.VISIBLE);
                 tvsignin.setClickable(true);
-                tvsignup.setVisibility(View.GONE);
 
-                //etpassword.startAnimation(animation);
-                objectAnimator.start();
-                objectAnimator1.start();
-                objectAnimator2.start();
-                objectAnimator3.start();
-                objectAnimator4.start();
-                objectAnimator5.start();
-                objectAnimator6.start();
-                objectAnimator9.start();
-                objectAnimator10.start();
-                objectAnimator11.start();
+                //Amination
+                YoYo.with(Techniques.BounceInRight).duration(2000).playOn(etname);
+                YoYo.with(Techniques.BounceInRight).duration(2000).playOn(etaddress);
+                YoYo.with(Techniques.BounceInLeft).duration(2000).playOn(lospinner);
+                YoYo.with(Techniques.BounceInLeft).duration(2000).playOn(etphone);
+                YoYo.with(Techniques.StandUp).duration(1000).playOn(btsignup);
+                YoYo.with(Techniques.StandUp).duration(1000).playOn(tvsignin);
             }
         });
         tvsignin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                finish();
-                startActivity(getIntent());
+                /*Intent intent = new Intent(getActivity(), BottomNavigationBarActivity.class);
+                intent.putExtra("login", true);
+                startActivity(intent);*/
+                updateUI(null);
             }
         });
-        firebaseAuth = FirebaseAuth.getInstance();
 
         btsignin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -167,30 +124,35 @@ public class LoginActivity extends AppCompatActivity {
                 String email = String.valueOf(etemail.getText());
                 String password = String.valueOf(etpassword.getText());
                 if (CheckOnline()) {
-                    progressDialog.setMessage("Đang đăng nhập...");
+
                     if (CheckInput(etemail) && CheckInput(etpassword)) {
-                        progressDialog.show();
+                        //progressDialog.show();
+                        btsignin.startAnimation();
                         firebaseAuth.signInWithEmailAndPassword(email, password)
                                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                                     @Override
                                     public void onComplete(@NonNull Task<AuthResult> task) {
                                         if (task.isSuccessful()) {
                                             FirebaseUser user = firebaseAuth.getCurrentUser();
-                                            updateUI(user);
+                                            //updateUI(user);
                                             SaveAccountToSharedPreferences(user);
-                                            progressDialog.dismiss();
-                                            tvuserid.setText(user.getUid());
-                                            startActivity(new Intent(LoginActivity.this,ShopActivity.class));
+                                            btsignin.dispose();
+
+                                            //tvuserid.setText(user.getUid());
+                                            startActivity(new Intent(LoginActivity.this, ShopActivity.class)
+                                            );
+                                            Toast.makeText(getApplicationContext(), "Sign in success", Toast.LENGTH_SHORT).show();
                                         } else {
+                                            btsignin.revertAnimation();
                                             Toast.makeText(getApplicationContext(), "Sign in failed", Toast.LENGTH_SHORT).show();
                                         }
                                     }
                                 });
                     }
                 } else {
-                    progressDialog.dismiss();
-                    Toast.makeText(getApplicationContext(),"Kiểm tra kết nối Internet",Toast.LENGTH_SHORT).show();
+                    btsignin.revertAnimation();
 
+                    Toast.makeText(getApplicationContext(), "Kiểm tra kết nối Internet", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -200,11 +162,11 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String email = String.valueOf(etemail.getText());
                 String password = String.valueOf(etpassword.getText());
-
                 if (CheckOnline()) {
-                    progressDialog.setMessage("Đang đăng ký...");
+
                     if (CheckInput(etemail) && CheckInput(etpassword) && CheckInput(etname) && CheckInput(etaddress) && CheckInput(etphone) && checkSpinner()) {
-                        progressDialog.show();
+                        btsignup.startAnimation();
+                        //progressDialog.show();
                         firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -219,35 +181,30 @@ public class LoginActivity extends AppCompatActivity {
                                     String xa = String.valueOf(spinnerxa.getTag());
                                     String phone = String.valueOf(etphone.getText());
 
-                                    Account account = new Account(userID,name,email,address,tinh,huyen,xa,phone);
+                                    Account account = new Account(userID, name, email, address, tinh, huyen, xa, phone);
                                     databaseReference.child(user.getUid()).setValue(account);
-                                    updateUI(user);
+                                    //updateUI(user);
                                     SaveAccountToSharedPreferences(user);
-                                    progressDialog.dismiss();
-                                    startActivity(new Intent(LoginActivity.this,ShopActivity.class));
+                                    btsignup.dispose();
+
+                                    startActivity(new Intent(LoginActivity.this, ShopActivity.class)
+                                    );
+                                    Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT).show();
                                 } else {
+                                    btsignup.revertAnimation();
                                     Toast.makeText(getApplicationContext(), "Sign up failed", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
                     }
                 } else {
+                    btsignup.revertAnimation();
 
+                    Toast.makeText(LoginActivity.this, "Kiểm tra kết nối Internet", Toast.LENGTH_SHORT).show();
                 }
             }
         });
-        btsignout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                firebaseAuth.signOut();
-                SharedPreferences sharedPreferences = getSharedPreferences("Account",Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.remove("userID");
-                editor.commit();
-                finish();
-                startActivity(getIntent());
-            }
-        });
+
     }
 
     @Override
@@ -256,65 +213,35 @@ public class LoginActivity extends AppCompatActivity {
         //check if user is signed in
         FirebaseUser user = firebaseAuth.getCurrentUser();
         updateUI(user);
-        if(user != null){
-            startActivity(new Intent(this,ShopActivity.class));
-        }
     }
 
-    private void updateUI(FirebaseUser user) {
-        if(user == null){
-            final ObjectAnimator objectAnimator7 = (ObjectAnimator) AnimatorInflater.loadAnimator(this, R.animator.move_down_animator);
-            final ObjectAnimator objectAnimator8 = (ObjectAnimator) AnimatorInflater.loadAnimator(this, R.animator.move_down_animator);
-
-            objectAnimator7.setTarget(etemail);
-            objectAnimator8.setTarget(etpassword);
-
-            objectAnimator7.start();
-            objectAnimator8.start();
-
-            etname.setVisibility(View.INVISIBLE);
-            lospinner.setVisibility(View.INVISIBLE);
-            etaddress.setVisibility(View.INVISIBLE);
-            etphone.setVisibility(View.INVISIBLE);
-            etname.setClickable(false);
-            lospinner.setClickable(false);
-            etaddress.setClickable(false);
-            etphone.setClickable(false);
-            btsignup.setVisibility(View.GONE);
-            btsignout.setVisibility(View.GONE);
-            tvsignin.setVisibility(View.GONE);
-
-            tvsignup.setClickable(true);
-        }else {
-            etemail.setVisibility(View.GONE);
-            etpassword.setVisibility(View.GONE);
+    private void updateUI(final FirebaseUser user) {
+        if (user == null) {
             etname.setVisibility(View.GONE);
             lospinner.setVisibility(View.GONE);
             etaddress.setVisibility(View.GONE);
             etphone.setVisibility(View.GONE);
-            btsignin.setVisibility(View.GONE);
             btsignup.setVisibility(View.GONE);
             tvsignin.setVisibility(View.GONE);
-            tvsignup.setVisibility(View.GONE);
-            btsignup.setEnabled(false);
-            btsignin.setEnabled(false);
-            tvsignup.setClickable(false);
-            tvsignin.setClickable(false);
-            etemail.setEnabled(false);
-            etpassword.setEnabled(false);
             etname.setClickable(false);
             lospinner.setClickable(false);
             etaddress.setClickable(false);
             etphone.setClickable(false);
+            btsignin.setVisibility(View.VISIBLE);
+            tvsignup.setVisibility(View.VISIBLE);
+            tvsignup.setClickable(true);
 
-            tvuserid.setVisibility(View.VISIBLE);
-            tvuserid.setText(user.getUid());
-            btsignout.setVisibility(View.VISIBLE);
+            //Amination
+            YoYo.with(Techniques.SlideInUp).duration(1000).playOn(etemail);
+            YoYo.with(Techniques.SlideInUp).duration(1000).playOn(etpassword);
+            YoYo.with(Techniques.FlipInX).duration(1000).playOn(btsignin);
+            YoYo.with(Techniques.FlipInX).duration(1000).playOn(tvsignup);
+        } else {
+            startActivity(new Intent(LoginActivity.this,ShopActivity.class));
         }
     }
-
     public boolean CheckOnline() {
-        ConnectivityManager manager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = manager.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
             return true;
@@ -339,25 +266,25 @@ public class LoginActivity extends AppCompatActivity {
         editor.putString("userID",user.getUid());
         editor.commit();
     }
-    public void fillSpinner(){
-        tinh  = getResources().getStringArray(R.array.tinh);
-        final ArrayAdapter adapter = new ArrayAdapter(LoginActivity.this,android.R.layout.simple_spinner_item,tinh);
+    public void fillSpinner() {
+        tinh = getResources().getStringArray(R.array.tinh);
+        final ArrayAdapter adapter = new ArrayAdapter(LoginActivity.this, android.R.layout.simple_spinner_item, tinh);
         spinnertinh.setAdapter(adapter);
         spinnertinh.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 String tinh = (String) adapterView.getItemAtPosition(i);
-                if(!tinh.equals("Tỉnh/thành phố")){
+                if (!tinh.equals("Tỉnh/thành phố")) {
                     spinnerhuyen.setVisibility(View.VISIBLE);
-                    if(tinh.equals("Đà Nẵng")){
+                    if (tinh.equals("Đà Nẵng")) {
                         spinnertinh.setTag(tinh);
                         huyen = getResources().getStringArray(R.array.huyenDN);
-                    }else {
+                    } else {
                         spinnertinh.setTag("Quảng Nam");
                         huyen = getResources().getStringArray(R.array.huyenQN);
                     }
-                    spinnerhuyen.setAdapter(new ArrayAdapter(LoginActivity.this,android.R.layout.simple_spinner_item,huyen));
-                }else {
+                    spinnerhuyen.setAdapter(new ArrayAdapter(LoginActivity.this, android.R.layout.simple_spinner_item, huyen));
+                } else {
                     spinnerhuyen.setVisibility(View.INVISIBLE);
                     spinnerxa.setVisibility(View.INVISIBLE);
                 }
@@ -372,7 +299,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 String huyen = (String) adapterView.getItemAtPosition(i);
-                if(!huyen.equals("Quận/huyện")){
+                if (!huyen.equals("Quận/huyện")) {
                     spinnerxa.setVisibility(View.VISIBLE);
                     if (huyen.equals("Thanh Khê")) {
                         xa = getResources().getStringArray(R.array.xaDN1);
@@ -393,8 +320,8 @@ public class LoginActivity extends AppCompatActivity {
                         xa = getResources().getStringArray(R.array.xaQN3);
                     }
                     spinnerhuyen.setTag(huyen);
-                    spinnerxa.setAdapter(new ArrayAdapter(LoginActivity.this,android.R.layout.simple_spinner_item,xa));
-                }else {
+                    spinnerxa.setAdapter(new ArrayAdapter(LoginActivity.this, android.R.layout.simple_spinner_item, xa));
+                } else {
                     spinnerxa.setVisibility(View.INVISIBLE);
                 }
             }
@@ -417,6 +344,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
+
     public boolean checkSpinner(){
         if(spinnertinh.getSelectedItem().toString().equals("Tỉnh/thành phố") || spinnerhuyen.getSelectedItem().toString().equals("Quận/huyện")
                 || spinnerxa.getSelectedItem().toString().equals("Xã/phường")){
