@@ -2,11 +2,9 @@ package com.example.caoan.shopmaster.Service;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 
-import com.example.caoan.shopmaster.EventBus.DeleteProductEvent;
 import com.example.caoan.shopmaster.Model.Drink;
 import com.example.caoan.shopmaster.Model.Food;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -18,9 +16,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -151,7 +146,7 @@ public class DeleteProduct extends Service {
     }
 
     /*@Subscribe
-    public void DeleteProduct(DeleteProductEvent productEvent){
+    public void DeleteProduct(BillEvent productEvent){
         String key = productEvent.getKey_store();
 
         foodList = new ArrayList<>();

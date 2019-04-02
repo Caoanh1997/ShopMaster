@@ -1,11 +1,14 @@
 package com.example.caoan.shopmaster.Model;
 
+import java.util.List;
+
 public class Bill {
     private String key_cart;
     private String name_user;
     private String address;
     private String phone;
-    private String product;
+    private String userID;
+    private List<Cart> cartList;
     private String total_price;
     private String state;
     private String key_store;
@@ -15,12 +18,12 @@ public class Bill {
     public Bill() {
     }
 
-    public Bill(String key_cart, String name_user, String address, String phone, String product, String total_price, String state, String key_store, String datetime, String datetime_delivered) {
+    public Bill(String key_cart, String name_user, String address, String phone, String userID, String total_price, String state, String key_store, String datetime, String datetime_delivered) {
         this.key_cart = key_cart;
         this.name_user = name_user;
         this.address = address;
         this.phone = phone;
-        this.product = product;
+        this.userID = userID;
         this.total_price = total_price;
         this.state = state;
         this.key_store = key_store;
@@ -28,32 +31,18 @@ public class Bill {
         this.datetime_delivered = datetime_delivered;
     }
 
-    public Bill(String name_user, String address, String phone, String product, String total_price, String state, String key_store, String datetime, String datetime_delivered) {
+    public Bill(String key_cart, String name_user, String address, String phone, String userID, List<Cart> cartList, String total_price, String state, String key_store, String datetime, String datetime_delivered) {
+        this.key_cart = key_cart;
         this.name_user = name_user;
         this.address = address;
         this.phone = phone;
-        this.product = product;
+        this.userID = userID;
+        this.cartList = cartList;
         this.total_price = total_price;
         this.state = state;
         this.key_store = key_store;
         this.datetime = datetime;
         this.datetime_delivered = datetime_delivered;
-    }
-
-    public String getKey_store() {
-        return key_store;
-    }
-
-    public void setKey_store(String key_store) {
-        this.key_store = key_store;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
     }
 
     public String getKey_cart() {
@@ -88,12 +77,20 @@ public class Bill {
         this.phone = phone;
     }
 
-    public String getProduct() {
-        return product;
+    public String getUserID() {
+        return userID;
     }
 
-    public void setProduct(String product) {
-        this.product = product;
+    public void setUserID(String userID) {
+        this.userID = userID;
+    }
+
+    public List<Cart> getCartList() {
+        return cartList;
+    }
+
+    public void setCartList(List<Cart> cartList) {
+        this.cartList = cartList;
     }
 
     public String getTotal_price() {
@@ -102,6 +99,22 @@ public class Bill {
 
     public void setTotal_price(String total_price) {
         this.total_price = total_price;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getKey_store() {
+        return key_store;
+    }
+
+    public void setKey_store(String key_store) {
+        this.key_store = key_store;
     }
 
     public String getDatetime() {
@@ -127,7 +140,8 @@ public class Bill {
                 ", name_user='" + name_user + '\'' +
                 ", address='" + address + '\'' +
                 ", phone='" + phone + '\'' +
-                ", product='" + product + '\'' +
+                ", userID='" + userID + '\'' +
+                ", cartList=" + cartList +
                 ", total_price='" + total_price + '\'' +
                 ", state='" + state + '\'' +
                 ", key_store='" + key_store + '\'' +

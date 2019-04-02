@@ -44,5 +44,7 @@ dependencies {
     implementation 'br.com.simplepass:loading-button-android:1.14.0'
     implementation 'com.github.aakira:expandable-layout:1.6.0@aar'
     implementation 'org.greenrobot:eventbus:3.0.0'
+    implementation 'com.gauravk.bubblenavigation:bubblenavigation:1.0.4'
+    implementation 'de.keyboardsurfer.android.widget:crouton:1.8.5@aar'
 }
 apply plugin: 'com.google.gms.google-services'

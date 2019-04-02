@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvkeycart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Mã đơn hàng"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvdateput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ngày đặt"
+            android:textColor="@android:color/black"
+            android:textStyle="normal" />
+
+        <TextView
+            android:id="@+id/tvdatepay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ngày thanh toán"
+            android:textColor="@android:color/black"
+            android:textStyle="normal" />
+        <TextView
+            android:id="@+id/tvname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tên khách hàng"
+            android:textColor="@android:color/black"
+            android:textStyle="normal" />
+        <TextView
+            android:id="@+id/tvaddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Địa chỉ giao hàng"
+            android:textColor="@android:color/black"
+            android:textStyle="normal" />
+        <TextView
+            android:id="@+id/tvphone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Số điện thoại"
+            android:textColor="@android:color/black"
+            android:textStyle="normal" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp">
+
+            <TextView
+                android:id="@+id/tvsumprice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:text="Sum price"
+                android:textColor="@color/red"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/tvstate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:text="State"
+                android:textColor="@android:color/holo_orange_dark"
+                android:textSize="15sp"
+                android:textStyle="italic" />
+
+            <LinearLayout
+                android:layout_below="@id/tvstate"
+                android:weightSum="2"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_weight="1"
+                    android:id="@+id/tvdeleteorder"
+                    android:layout_width="0dp"
+                    android:layout_height="35dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/button_delete"
+                    android:gravity="center"
+                    android:text="Hủy đơn hàng"
+                    android:textColor="@color/red" />
+                <TextView
+                    android:layout_weight="1"
+                    android:id="@+id/tvconfirm"
+                    android:layout_width="0dp"
+                    android:layout_height="35dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/button_delete"
+                    android:gravity="center"
+                    android:text="Xác nhận đơn hàng"
+                    android:textColor="@color/blue" />
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

@@ -52,9 +52,6 @@
         <activity
             android:name=".WelcomeActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".OrderManagementActivity" />
-        <activity android:name=".TransportActivity" />
-        <activity android:name=".DeliveredActivity" />
         <activity android:name=".OrderActivity" />
 
         <receiver android:name=".Broadcast.GetNotification">

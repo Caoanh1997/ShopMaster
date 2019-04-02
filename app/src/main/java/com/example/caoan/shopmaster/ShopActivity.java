@@ -20,11 +20,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.caoan.shopmaster.Adapter.StoreRecyclerViewAdapter;
-import com.example.caoan.shopmaster.EventBus.DeleteProductEvent;
 import com.example.caoan.shopmaster.Model.Drink;
 import com.example.caoan.shopmaster.Model.Food;
 import com.example.caoan.shopmaster.Model.Store;
-import com.example.caoan.shopmaster.Service.DeleteProduct;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,8 +34,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -176,10 +172,10 @@ public class ShopActivity extends AppCompatActivity {
                 startActivity(new Intent(this, OrderActivity.class));
                 return true;
             case R.id.transport:
-                startActivity(new Intent(this, TransportActivity.class));
+                //startActivity(new Intent(this, TransportActivity.class));
                 return true;
             case R.id.delivered:
-                startActivity(new Intent(this, DeliveredActivity.class));
+                //startActivity(new Intent(this, DeliveredActivity.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

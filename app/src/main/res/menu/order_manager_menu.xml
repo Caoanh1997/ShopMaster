@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/confirm"
+        android:icon="@drawable/ic_confirm"
+        android:title="Confirm"/>
+    <item android:id="@+id/transport"
+        android:icon="@drawable/ic_transport"
+        android:title="Transport"/>
+    <item android:id="@+id/delivered"
+        android:icon="@drawable/ic_delivered"
+        android:title="Delivered"/>
+    <item android:id="@+id/delete"
+        android:icon="@drawable/ic_delete"
+        android:title="Delete"/>
+
+</menu>
