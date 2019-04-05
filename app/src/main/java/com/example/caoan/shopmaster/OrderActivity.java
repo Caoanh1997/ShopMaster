@@ -8,10 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SearchView;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.example.caoan.shopmaster.EventBus.BillEvent;
 import com.example.caoan.shopmaster.EventBus.DeleteEvent;
@@ -23,8 +20,6 @@ import com.example.caoan.shopmaster.FragmentComponent.DeleteOrderFragment;
 import com.example.caoan.shopmaster.FragmentComponent.DeliveredOrderFragment;
 import com.example.caoan.shopmaster.FragmentComponent.TransportOrderFragment;
 import com.example.caoan.shopmaster.Model.Bill;
-import com.gauravk.bubblenavigation.BubbleNavigationConstraintView;
-import com.gauravk.bubblenavigation.listener.BubbleNavigationChangeListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -83,29 +78,6 @@ public class OrderActivity extends AppCompatActivity {
         });
         bottomNavigationView.setSelectedItemId(R.id.confirm);
 
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu,menu);
-        MenuItem menuItem = menu.findItem(R.id.search);
-        SearchView searchView = (SearchView) menuItem.getActionView();
-        final int i = bottomNavigationView.getSelectedItemId();
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                if(i==R.id.delivered){
-                    DeliveredOrderFragment.Search(query);
-                }
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
-        });
-        return super.onCreateOptionsMenu(menu);
     }
 
     @Override

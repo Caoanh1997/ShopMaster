@@ -1,27 +1,20 @@
 package com.example.caoan.shopmaster;
 
-import android.animation.AnimatorInflater;
-import android.animation.ObjectAnimator;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.transition.Fade;
-import android.transition.Slide;
-import android.transition.TransitionInflater;
 import android.view.View;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -32,6 +25,7 @@ import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.example.caoan.shopmaster.Model.Account;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -55,6 +49,7 @@ public class LoginActivity extends AppCompatActivity {
     private String[] huyen;
     private String[] xa;
     private Spinner spinnertinh, spinnerhuyen, spinnerxa;
+    private LinearLayout linearLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +69,9 @@ public class LoginActivity extends AppCompatActivity {
         spinnertinh = findViewById(R.id.spinnertinh);
         spinnerhuyen = findViewById(R.id.spinnerhuyen);
         spinnerxa = findViewById(R.id.spinnerxa);
+        linearLayout = findViewById(R.id.linearlayout);
+
+        final InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
         spinnerhuyen.setVisibility(View.INVISIBLE);
         spinnerxa.setVisibility(View.INVISIBLE);
@@ -121,10 +119,10 @@ public class LoginActivity extends AppCompatActivity {
         btsignin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                inputMethodManager.hideSoftInputFromWindow(linearLayout.getWindowToken(), 0);
                 String email = String.valueOf(etemail.getText());
                 String password = String.valueOf(etpassword.getText());
                 if (CheckOnline()) {
-
                     if (CheckInput(etemail) && CheckInput(etpassword)) {
                         //progressDialog.show();
                         btsignin.startAnimation();
@@ -147,7 +145,12 @@ public class LoginActivity extends AppCompatActivity {
                                             Toast.makeText(getApplicationContext(), "Sign in failed", Toast.LENGTH_SHORT).show();
                                         }
                                     }
-                                });
+                                }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                System.out.println("Failed: " + e.getMessage());
+                            }
+                        });
                     }
                 } else {
                     btsignin.revertAnimation();
@@ -160,6 +163,7 @@ public class LoginActivity extends AppCompatActivity {
         btsignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                inputMethodManager.hideSoftInputFromWindow(linearLayout.getWindowToken(), 0);
                 String email = String.valueOf(etemail.getText());
                 String password = String.valueOf(etpassword.getText());
                 if (CheckOnline()) {

@@ -1,17 +1,33 @@
 package com.example.caoan.shopmaster.FragmentComponent;
 
+import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.ExpandableListView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
+import com.arlib.floatingsearchview.FloatingSearchView;
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
+import com.example.caoan.shopmaster.Adapter.BillDeliveredAdapter;
 import com.example.caoan.shopmaster.Adapter.BillExpandListAdapter;
+import com.example.caoan.shopmaster.Adapter.BillTransportAdapter;
 import com.example.caoan.shopmaster.Model.Bill;
 import com.example.caoan.shopmaster.Model.Cart;
 import com.example.caoan.shopmaster.OrderActivity;
@@ -23,11 +39,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-
-import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.Style;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -56,6 +70,14 @@ public class ConfirmOrderFragment extends Fragment {
     private View view;
     private String userID;
     private ProgressBar progressBar;
+    private FloatingSearchView floatingSearchView;
+    private RadioGroup rdgsearch;
+    private RadioButton rdbname, rdbdate;
+    private LinearLayout search_date;
+    private TextView tvdate;
+    private Button btpick_date;
+    private RelativeLayout layout_search;
+    private TextView tvnumber_order;
 
     public ConfirmOrderFragment() {
         // Required empty public constructor
@@ -95,9 +117,55 @@ public class ConfirmOrderFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_confirm_order, container, false);
         expandableListView = view.findViewById(R.id.eplorder);
         progressBar = view.findViewById(R.id.progressbar);
+        floatingSearchView = view.findViewById(R.id.floating_search_view);
+        rdgsearch = view.findViewById(R.id.rdgsearch);
+        rdbname = view.findViewById(R.id.rdbname);
+        rdbdate = view.findViewById(R.id.rdbdate);
+        search_date = view.findViewById(R.id.search_date);
+        tvdate = view.findViewById(R.id.tvdate);
+        btpick_date = view.findViewById(R.id.btpick_date);
+        layout_search = view.findViewById(R.id.layout_search);
+        tvnumber_order = view.findViewById(R.id.tvnumber_order);
+
+
+        floatingSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
+            @Override
+            public void onSearchTextChanged(String oldQuery, String newQuery) {
+                billExpandListAdapter.getFilter().filter(newQuery);
+            }
+        });
         userID = getActivity().getSharedPreferences("Account",Context.MODE_PRIVATE).getString("userID","");
 
         Load();
+
+        btpick_date.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DialogFragment dialogFragment = new DatePickerFragment(tvdate, billExpandListAdapter);
+                dialogFragment.show(getFragmentManager(), "Date Picker");
+            }
+        });
+        rdgsearch.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                switch (i) {
+                    case R.id.rdbname:
+                        billExpandListAdapter.getFilter().filter(null);
+                        floatingSearchView.setVisibility(View.VISIBLE);
+                        search_date.setVisibility(View.GONE);
+                        break;
+                    case R.id.rdbdate:
+                        billExpandListAdapter.getFilter().filter(null);
+                        floatingSearchView.setVisibility(View.GONE);
+                        search_date.setVisibility(View.VISIBLE);
+                        break;
+                    default:
+                        floatingSearchView.setVisibility(View.VISIBLE);
+                        search_date.setVisibility(View.GONE);
+                        break;
+                }
+            }
+        });
 
         return view;
     }
@@ -127,10 +195,16 @@ public class ConfirmOrderFragment extends Fragment {
                 }
                 progressBar.setVisibility(View.GONE);
                 if (billList.size() == 0) {
-                    Crouton.makeText(getActivity(), "Không có đơn hàng", Style.ALERT).show();
+                    //Crouton.makeText(getActivity(), "Không có đơn hàng", Style.ALERT).show();
+                    tvnumber_order.setVisibility(View.VISIBLE);
+                    YoYo.with(Techniques.BounceInDown).duration(1000).playOn(tvnumber_order);
+                    layout_search.setVisibility(View.GONE);
                 } else {
                     billExpandListAdapter = new BillExpandListAdapter(getContext(), billList, ListBillDetail, new ConfirmOrderFragment());
                     expandableListView.setAdapter(billExpandListAdapter);
+                    tvnumber_order.setVisibility(View.VISIBLE);
+                    tvnumber_order.setText("Có " + String.valueOf(billList.size()) + " đơn hàng");
+                    YoYo.with(Techniques.BounceInDown).duration(1000).playOn(tvnumber_order);
                 }
             }
 
@@ -175,4 +249,84 @@ public class ConfirmOrderFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
+    @SuppressLint("ValidFragment")
+    public static class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
+
+        private TextView textView;
+        private BillExpandListAdapter billExpandListAdapter;
+        private BillTransportAdapter billTransportAdapter;
+        private BillDeliveredAdapter billDeliveredAdapter;
+        private BillDeliveredAdapter billDeleteAdapter;
+        private boolean isConfirm = false;
+        private boolean isTransport = false;
+        private boolean isDelivered = false;
+        private boolean isDelete = false;
+
+        public DatePickerFragment(TextView textView, BillExpandListAdapter billExpandListAdapter) {
+            this.textView = textView;
+            this.billExpandListAdapter = billExpandListAdapter;
+            this.isConfirm = true;
+        }
+
+        public DatePickerFragment(TextView textView, BillTransportAdapter billTransportAdapter) {
+            this.textView = textView;
+            this.billTransportAdapter = billTransportAdapter;
+            this.isTransport = true;
+        }
+
+        public DatePickerFragment(TextView textView, BillDeliveredAdapter billDeliveredAdapter) {
+            this.textView = textView;
+            this.billDeliveredAdapter = billDeliveredAdapter;
+            this.isDelivered = true;
+        }
+
+        public DatePickerFragment(TextView textView, BillDeliveredAdapter billDeletedAdapter, boolean isDelete) {
+            this.textView = textView;
+            this.billDeleteAdapter = billDeletedAdapter;
+            this.isDelete = true;
+        }
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            Calendar calendar = Calendar.getInstance();
+
+            int years = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DATE);
+
+            return new DatePickerDialog(getActivity(), this, years, month, day);
+        }
+
+        @Override
+        public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+            String month, day;
+            month = String.valueOf(i1 + 1);
+            day = String.valueOf(i2);
+            if ((i1 + 1) < 10) {
+                month = "0".concat(String.valueOf(i1 + 1));
+            }
+            if (i2 < 10) {
+                day = "0".concat(String.valueOf(i2));
+            }
+            String date = day + "/" + month + "/" + String.valueOf(i);
+            textView.setText(date);
+            if (isTransport) {
+                billTransportAdapter.getFilter().filter(date);
+                System.out.println("filter transport");
+            }
+            if (isDelivered) {
+                billDeliveredAdapter.getFilter().filter(date);
+                System.out.println("filter delivered");
+            }
+            if (isDelete) {
+                billDeleteAdapter.getFilter().filter(date);
+                System.out.println("filter delete");
+            }
+            if (isConfirm) {
+                billExpandListAdapter.getFilter().filter(date);
+                System.out.println("filter confirm");
+            }
+        }
+    }
 }

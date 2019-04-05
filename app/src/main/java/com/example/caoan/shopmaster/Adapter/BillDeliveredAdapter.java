@@ -13,7 +13,12 @@ import android.widget.TextView;
 
 import com.example.caoan.shopmaster.Model.Bill;
 import com.example.caoan.shopmaster.Model.Cart;
+import com.example.caoan.shopmaster.Model.Store;
 import com.example.caoan.shopmaster.R;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -26,12 +31,24 @@ public class BillDeliveredAdapter extends BaseExpandableListAdapter implements F
     private HashMap<Bill, List<Cart>> billListHashMap;
     private Context context;
     private Fragment fragment;
+    private List<Bill> filter;
+    private boolean isDelete = false;
 
     public BillDeliveredAdapter(List<Bill> billList, HashMap<Bill, List<Cart>> billListHashMap, Context context, Fragment fragment) {
         this.billList = billList;
         this.billListHashMap = billListHashMap;
         this.context = context;
         this.fragment = fragment;
+        this.filter = billList;
+    }
+
+    public BillDeliveredAdapter(List<Bill> billList, HashMap<Bill, List<Cart>> billListHashMap, Context context, Fragment fragment, boolean isDelete) {
+        this.billList = billList;
+        this.billListHashMap = billListHashMap;
+        this.context = context;
+        this.fragment = fragment;
+        this.filter = billList;
+        this.isDelete = true;
     }
 
     @Override
@@ -71,12 +88,13 @@ public class BillDeliveredAdapter extends BaseExpandableListAdapter implements F
 
     @Override
     public View getGroupView(int i, boolean b, View view, ViewGroup viewGroup) {
-        Bill bill = (Bill) getGroup(i);
+        final Bill bill = (Bill) getGroup(i);
         if(view == null){
             LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = layoutInflater.inflate(R.layout.bill_item_delivered_layout,null);
         }
         TextView tvkeycart = view.findViewById(R.id.tvkeycart);
+        final TextView tvstore = view.findViewById(R.id.tvstore);
         TextView tvdateput = view.findViewById(R.id.tvdateput);
         TextView tvdatepay = view.findViewById(R.id.tvdatepay);
         TextView tvname = view.findViewById(R.id.tvname);
@@ -86,6 +104,18 @@ public class BillDeliveredAdapter extends BaseExpandableListAdapter implements F
         TextView tvstate = view.findViewById(R.id.tvstate);
 
         tvkeycart.setText("Mã đơn hàng: " + bill.getKey_cart());
+        FirebaseDatabase.getInstance().getReference("Store").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Store store = dataSnapshot.child(bill.getKey_store()).getValue(Store.class);
+                tvstore.setText(store.getName());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
         tvdateput.setText("Ngày đặt: " + bill.getDatetime());
         tvdatepay.setText("Ngày thanh toán: " + bill.getDatetime_delivered());
         tvsumprice.setText("Tổng tiền: " + bill.getTotal_price() + "đ");
@@ -130,14 +160,22 @@ public class BillDeliveredAdapter extends BaseExpandableListAdapter implements F
                 List<Bill> suggestion = new ArrayList<>();
 
                 if(charSequence == null || charSequence.length()==0){
-                    suggestion.addAll(billList);
+                    suggestion.addAll(filter);
                 }else {
-                    String str = charSequence.toString().trim().toLowerCase();
-                    System.out.println(str);
-                    for(Bill bill : billList){
-                        if(bill.getName_user().trim().toLowerCase().contains(str)){
-                            suggestion.add(bill);
+                    String str = BillExpandListAdapter.convertString(charSequence.toString().trim().toLowerCase());
+                    for (Bill bill : filter) {
+                        if (isDelete) {
+                            if (BillExpandListAdapter.convertString(bill.getName_user().trim().toLowerCase()).contains(str)
+                                    || bill.getDatetime().contains(str)) {
+                                suggestion.add(bill);
+                            }
+                        } else {
+                            if (BillExpandListAdapter.convertString(bill.getName_user().trim().toLowerCase()).contains(str)
+                                    || bill.getDatetime_delivered().contains(str)) {
+                                suggestion.add(bill);
+                            }
                         }
+
                     }
                 }
                 FilterResults results = new FilterResults();

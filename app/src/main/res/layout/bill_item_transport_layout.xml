@@ -18,6 +18,14 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/tvstore"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cửa hàng:"
+            android:textColor="@android:color/black"
+            android:textStyle="bold" />
+
+        <TextView
             android:id="@+id/tvdateput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

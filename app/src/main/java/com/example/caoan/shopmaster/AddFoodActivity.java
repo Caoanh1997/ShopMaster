@@ -7,11 +7,11 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -132,6 +132,7 @@ public class AddFoodActivity extends AppCompatActivity {
                                 public void onSuccess(Void aVoid) {
                                     System.out.println("Upload food success");
                                     progressDialog.dismiss();
+                                    finish();
                                     startActivity(new Intent(AddFoodActivity.this,ProductActivity.class));
                                 }
                             }).addOnFailureListener(new OnFailureListener() {

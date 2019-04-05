@@ -3,10 +3,10 @@ package com.example.caoan.shopmaster;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,12 +14,15 @@ import android.widget.TabHost;
 import android.widget.Toast;
 
 import com.example.caoan.shopmaster.Adapter.FragmentAdapter;
+import com.example.caoan.shopmaster.EventBus.LoadEvent;
 import com.example.caoan.shopmaster.FragmentComponent.DrinkFragment;
 import com.example.caoan.shopmaster.FragmentComponent.FoodFragment;
-import com.example.caoan.shopmaster.ViewPageTransformer.DepthPageTransformer;
 import com.example.caoan.shopmaster.ViewPageTransformer.ZoomOutPageTransformer;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,6 +96,9 @@ public class ProductActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),"Sign out ok",Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(ProductActivity.this, LoginActivity.class));
                 return true;
+            case R.id.manage:
+                startActivity(new Intent(this, OrderActivity.class));
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -142,5 +148,28 @@ public class ProductActivity extends AppCompatActivity {
         key = sharedPreferences.getString("key","");
 
         return key;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe
+    public void onCustomLoadEvent(LoadEvent loadEvent) {
+        if (loadEvent.isLoad()) {
+            if (loadEvent.getFragment() instanceof FoodFragment) {
+
+            }
+        }
     }
 }

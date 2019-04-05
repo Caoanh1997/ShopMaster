@@ -3,10 +3,94 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".FragmentComponent.TransportOrderFragment">
 
     <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:id="@+id/tvnumber_order"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/holo_red_light"
+        android:gravity="center"
+        android:text="Không có đơn hàng"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+    <RelativeLayout
+        android:id="@+id/layout_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvnumber_order">
+
+        <RadioGroup
+            android:id="@+id/rdgsearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checkedButton="@id/rdbname"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <RadioButton
+                android:id="@+id/rdbname"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/search_name" />
+
+            <RadioButton
+                android:id="@+id/rdbdate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/search_date" />
+
+        </RadioGroup>
+
+        <LinearLayout
+            android:id="@+id/search_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rdgsearch"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            android:weightSum="100">
+
+            <TextView
+                android:id="@+id/tvdate"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="80"
+                android:gravity="center"
+                android:text="@string/pick_date" />
+
+            <Button
+                android:id="@+id/btpick_date"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="20"
+                android:text="@string/pick_date" />
+        </LinearLayout>
+
+
+        <com.arlib.floatingsearchview.FloatingSearchView
+            android:id="@+id/floating_search_view"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_below="@+id/search_date"
+            app:floatingSearch_close_search_on_keyboard_dismiss="true"
+            app:floatingSearch_leftActionMode="showHamburger"
+            app:floatingSearch_menu="@menu/menu"
+            app:floatingSearch_searchBarMarginLeft="@dimen/search_view_inset"
+            app:floatingSearch_searchBarMarginRight="@dimen/search_view_inset"
+            app:floatingSearch_searchBarMarginTop="@dimen/search_view_inset"
+            app:floatingSearch_searchHint="Search..."
+            app:floatingSearch_showSearchKey="false"
+            app:floatingSearch_suggestionsListAnimDuration="250" />
+    </RelativeLayout>
     <ExpandableListView
+        android:layout_below="@id/layout_search"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
         android:id="@+id/eplorder"

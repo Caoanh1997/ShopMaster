@@ -3,13 +3,23 @@ package com.example.caoan.shopmaster.FragmentComponent;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ExpandableListView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
+import com.arlib.floatingsearchview.FloatingSearchView;
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.example.caoan.shopmaster.Adapter.BillDeliveredAdapter;
 import com.example.caoan.shopmaster.Model.Bill;
 import com.example.caoan.shopmaster.Model.Cart;
@@ -51,7 +61,15 @@ public class DeleteOrderFragment extends Fragment {
     private HashMap<Bill, List<Cart>> billListHashMap;
     private View view;
     private String userID;
-    private BillDeliveredAdapter billDeliveredAdapter;
+    private BillDeliveredAdapter billDeleteAdapter;
+    private FloatingSearchView floatingSearchView;
+    private RadioGroup rdgsearch;
+    private RadioButton rdbname, rdbdate;
+    private LinearLayout search_date;
+    private TextView tvdate;
+    private Button btpick_date;
+    private RelativeLayout layout_search;
+    private TextView tvnumber_order;
 
     public DeleteOrderFragment() {
         // Required empty public constructor
@@ -91,8 +109,54 @@ public class DeleteOrderFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_delivered_order, container, false);
         expandableListView = view.findViewById(R.id.eplorder);
         progressBar = view.findViewById(R.id.progressbar);
+        floatingSearchView = view.findViewById(R.id.floating_search_view);
+        rdgsearch = view.findViewById(R.id.rdgsearch);
+        rdbname = view.findViewById(R.id.rdbname);
+        rdbdate = view.findViewById(R.id.rdbdate);
+        search_date = view.findViewById(R.id.search_date);
+        tvdate = view.findViewById(R.id.tvdate);
+        btpick_date = view.findViewById(R.id.btpick_date);
+        layout_search = view.findViewById(R.id.layout_search);
+        tvnumber_order = view.findViewById(R.id.tvnumber_order);
 
         Load();
+
+        btpick_date.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DialogFragment dialogFragment = new ConfirmOrderFragment.DatePickerFragment(tvdate, billDeleteAdapter, true);
+                dialogFragment.show(getFragmentManager(), "Date Picker");
+            }
+        });
+
+        floatingSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
+            @Override
+            public void onSearchTextChanged(String oldQuery, String newQuery) {
+                billDeleteAdapter.getFilter().filter(newQuery);
+            }
+        });
+
+        rdgsearch.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                switch (i) {
+                    case R.id.rdbname:
+                        billDeleteAdapter.getFilter().filter(null);
+                        floatingSearchView.setVisibility(View.VISIBLE);
+                        search_date.setVisibility(View.GONE);
+                        break;
+                    case R.id.rdbdate:
+                        billDeleteAdapter.getFilter().filter(null);
+                        floatingSearchView.setVisibility(View.GONE);
+                        search_date.setVisibility(View.VISIBLE);
+                        break;
+                    default:
+                        floatingSearchView.setVisibility(View.VISIBLE);
+                        search_date.setVisibility(View.GONE);
+                        break;
+                }
+            }
+        });
         return view;
     }
 
@@ -119,8 +183,18 @@ public class DeleteOrderFragment extends Fragment {
                     billListHashMap.put(b,cartList);
                 }
                 progressBar.setVisibility(View.GONE);
-                billDeliveredAdapter = new BillDeliveredAdapter(billList,billListHashMap,getContext(),new DeleteOrderFragment());
-                expandableListView.setAdapter(billDeliveredAdapter);
+                if (billList.size() == 0) {
+                    tvnumber_order.setVisibility(View.VISIBLE);
+                    YoYo.with(Techniques.BounceInDown).duration(1000).playOn(tvnumber_order);
+                    layout_search.setVisibility(View.GONE);
+                } else {
+                    billDeleteAdapter = new BillDeliveredAdapter(billList, billListHashMap, getContext(), new DeleteOrderFragment(), true);
+                    expandableListView.setAdapter(billDeleteAdapter);
+                    tvnumber_order.setVisibility(View.VISIBLE);
+                    tvnumber_order.setText("Có " + String.valueOf(billList.size()) + " đơn hàng");
+                    YoYo.with(Techniques.BounceInDown).duration(1000).playOn(tvnumber_order);
+                }
+
             }
 
             @Override
@@ -162,4 +236,5 @@ public class DeleteOrderFragment extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
 }

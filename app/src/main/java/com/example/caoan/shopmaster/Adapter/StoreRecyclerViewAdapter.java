@@ -8,6 +8,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,19 +18,23 @@ import com.example.caoan.shopmaster.ItemClickListener;
 import com.example.caoan.shopmaster.Model.Store;
 import com.example.caoan.shopmaster.ProductActivity;
 import com.example.caoan.shopmaster.R;
-import com.example.caoan.shopmaster.ShopActivity;
 import com.squareup.picasso.Picasso;
 
+import java.text.Normalizer;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
-public class StoreRecyclerViewAdapter extends RecyclerView.Adapter<StoreRecyclerViewAdapter.ViewHolder> {
+public class StoreRecyclerViewAdapter extends RecyclerView.Adapter<StoreRecyclerViewAdapter.ViewHolder> implements Filterable {
     private List<Store> storeList;
     private Context context;
+    private List<Store> filter;
 
     public StoreRecyclerViewAdapter(List<Store> storeList, Context context) {
         this.storeList = storeList;
         this.context = context;
+        this.filter = storeList;
     }
 
     @NonNull
@@ -90,6 +96,17 @@ public class StoreRecyclerViewAdapter extends RecyclerView.Adapter<StoreRecycler
         return storeList.size();
     }
 
+    public static String convertString(String str) {
+        try {
+            String temp = Normalizer.normalize(str, Normalizer.Form.NFD);
+            Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+            return pattern.matcher(temp).replaceAll("").toLowerCase().replaceAll(" ", "").replaceAll("đ", "d");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
         private ImageView ivstore;
         private TextView tvname, tvaddress, tvphone;
@@ -120,5 +137,40 @@ public class StoreRecyclerViewAdapter extends RecyclerView.Adapter<StoreRecycler
             itemClickListener.onClick(view,getAdapterPosition(),true);
             return true;
         }
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                FilterResults results = new FilterResults();
+                List<Store> suggestion = new ArrayList<>();
+                if (charSequence == null || charSequence.length() == 0) {
+                    suggestion.addAll(filter);
+                } else {
+                    String str = convertString(charSequence.toString().toLowerCase().trim());
+                    for (Store store : filter) {
+                        if (convertString(store.getName().toLowerCase().trim()).contains(str)
+                                || convertString(store.getDuong().toLowerCase().trim()).contains(str)
+                                || convertString(store.getXa().toLowerCase().trim()).contains(str)
+                                || convertString(store.getHuyen().trim().toLowerCase()).contains(str)
+                                || convertString(store.getTinh().toLowerCase().trim()).contains(str)) {
+                            suggestion.add(store);
+                        }
+                    }
+                }
+                results.count = suggestion.size();
+                results.values = suggestion;
+
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                storeList = (List<Store>) filterResults.values;
+                notifyDataSetChanged();
+            }
+        };
     }
 }

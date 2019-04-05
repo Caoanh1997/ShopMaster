@@ -3,14 +3,23 @@ package com.example.caoan.shopmaster.FragmentComponent;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ExpandableListView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
-import com.example.caoan.shopmaster.Adapter.BillExpandListAdapter;
+import com.arlib.floatingsearchview.FloatingSearchView;
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.example.caoan.shopmaster.Adapter.BillTransportAdapter;
 import com.example.caoan.shopmaster.Model.Bill;
 import com.example.caoan.shopmaster.Model.Cart;
@@ -24,9 +33,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.Style;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -56,6 +62,14 @@ public class TransportOrderFragment extends Fragment {
     private ExpandableListView expandableListView;
     private BillTransportAdapter billTransportAdapter;
     private Bill item;
+    private FloatingSearchView floatingSearchView;
+    private RadioGroup rdgsearch;
+    private RadioButton rdbname, rdbdate;
+    private LinearLayout search_date;
+    private TextView tvdate;
+    private Button btpick_date;
+    private RelativeLayout layout_search;
+    private TextView tvnumber_order;
 
     public TransportOrderFragment() {
         // Required empty public constructor
@@ -95,8 +109,53 @@ public class TransportOrderFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_transport_order, container, false);
         expandableListView = view.findViewById(R.id.eplorder);
         progressBar = view.findViewById(R.id.progressbar);
+        floatingSearchView = view.findViewById(R.id.floating_search_view);
+        rdgsearch = view.findViewById(R.id.rdgsearch);
+        rdbname = view.findViewById(R.id.rdbname);
+        rdbdate = view.findViewById(R.id.rdbdate);
+        search_date = view.findViewById(R.id.search_date);
+        tvdate = view.findViewById(R.id.tvdate);
+        btpick_date = view.findViewById(R.id.btpick_date);
+        layout_search = view.findViewById(R.id.layout_search);
+        tvnumber_order = view.findViewById(R.id.tvnumber_order);
 
+        btpick_date.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DialogFragment dialogFragment = new ConfirmOrderFragment.DatePickerFragment(tvdate, billTransportAdapter);
+                dialogFragment.show(getFragmentManager(), "Date Picker");
+            }
+        });
+
+        floatingSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
+            @Override
+            public void onSearchTextChanged(String oldQuery, String newQuery) {
+                billTransportAdapter.getFilter().filter(newQuery);
+            }
+        });
         Load();
+        rdgsearch.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                switch (i) {
+                    case R.id.rdbname:
+                        billTransportAdapter.getFilter().filter(null);
+                        floatingSearchView.setVisibility(View.VISIBLE);
+                        search_date.setVisibility(View.GONE);
+                        break;
+                    case R.id.rdbdate:
+                        billTransportAdapter.getFilter().filter(null);
+                        floatingSearchView.setVisibility(View.GONE);
+                        search_date.setVisibility(View.VISIBLE);
+                        break;
+                    default:
+                        floatingSearchView.setVisibility(View.VISIBLE);
+                        search_date.setVisibility(View.GONE);
+                        break;
+                }
+            }
+        });
+
         return view;
     }
 
@@ -126,10 +185,16 @@ public class TransportOrderFragment extends Fragment {
                 }
                 progressBar.setVisibility(View.GONE);
                 if (billList.size() == 0) {
-                    Crouton.makeText(getActivity(), "Không có đơn hàng", Style.ALERT).show();
+                    //Crouton.makeText(getActivity(), "Không có đơn hàng", Style.ALERT).show();
+                    tvnumber_order.setVisibility(View.VISIBLE);
+                    YoYo.with(Techniques.BounceInDown).duration(1000).playOn(tvnumber_order);
+                    layout_search.setVisibility(View.GONE);
                 } else {
                     billTransportAdapter = new BillTransportAdapter(getContext(), billList, billListHashMap, new TransportOrderFragment());
                     expandableListView.setAdapter(billTransportAdapter);
+                    tvnumber_order.setVisibility(View.VISIBLE);
+                    tvnumber_order.setText("Có " + String.valueOf(billList.size()) + " đơn hàng");
+                    YoYo.with(Techniques.BounceInDown).duration(1000).playOn(tvnumber_order);
                 }
             }
 

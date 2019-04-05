@@ -1,14 +1,17 @@
 package com.example.caoan.shopmaster;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.ContextMenu;
@@ -50,6 +53,7 @@ public class ShopActivity extends AppCompatActivity {
     //private StoreAdapter adapter;
     private RecyclerView recyclerView;
     private StoreRecyclerViewAdapter storeRecyclerViewAdapter;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +64,18 @@ public class ShopActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         recyclerView = findViewById(R.id.rcvstore);
+        swipeRefreshLayout = findViewById(R.id.refresh_layout);
+
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
+        swipeRefreshLayout.setProgressBackgroundColorSchemeResource(R.color.colorAccent);
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                storeList.clear();
+                Load();
+            }
+        });
 
         // sdkmin = 21
         //Fade fade = (Fade) TransitionInflater.from(this).inflateTransition(R.transition.fade);
@@ -96,8 +112,6 @@ public class ShopActivity extends AppCompatActivity {
                                 DeleteStore(storeList.get(position).getKey(), storeList.get(position).getUrlImage());
                                 storeRecyclerViewAdapter.Swipe(position, direction);
                                 dialogInterface.dismiss();
-                                storeList.clear();
-                                Load();
                             }
                         })
                         .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -146,16 +160,28 @@ public class ShopActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
 //        return super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.menu, menu);
+        MenuItem menuItem = menu.findItem(R.id.search);
+        SearchView searchView = (SearchView) menuItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                storeRecyclerViewAdapter.getFilter().filter(s);
+                return false;
+            }
+        });
+
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.add:
-                Toast.makeText(getApplicationContext(), "Add", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(ShopActivity.this, AddShopActivity.class));
-                return true;
             case R.id.logout:
                 firebaseAuth.signOut();
                 Toast.makeText(getApplicationContext(), "Sign out ok", Toast.LENGTH_SHORT).show();
@@ -164,18 +190,8 @@ public class ShopActivity extends AppCompatActivity {
             case R.id.about:
                 Toast.makeText(getApplicationContext(), "About", Toast.LENGTH_SHORT).show();
                 return true;
-            case R.id.refresh:
-                storeList.clear();
-                Load();
-                return true;
             case R.id.manage:
                 startActivity(new Intent(this, OrderActivity.class));
-                return true;
-            case R.id.transport:
-                //startActivity(new Intent(this, TransportActivity.class));
-                return true;
-            case R.id.delivered:
-                //startActivity(new Intent(this, DeliveredActivity.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -200,22 +216,22 @@ public class ShopActivity extends AppCompatActivity {
             firebaseDatabase = FirebaseDatabase.getInstance();
             DatabaseReference reference = firebaseDatabase.getReference("Store");
 
-            reference.addValueEventListener(new ValueEventListener() {
+            reference.child(getSharedPreferences("Account", Context.MODE_PRIVATE)
+                    .getString("userID", "")).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         Store store = snapshot.getValue(Store.class);
-                        if (store.getUserkey().equals(user.getUid())) {
-                            storeList.add(store);
-                        }
+                        storeList.add(store);
+
                     }
                     progressBar.setVisibility(View.GONE);
-//                    lvstore.setVisibility(View.VISIBLE);
-//                    adapter = new StoreAdapter(getApplicationContext(),storeList);
-//                    lvstore.setAdapter(adapter);
                     storeRecyclerViewAdapter = new StoreRecyclerViewAdapter(storeList, ShopActivity.this);
                     recyclerView.setAdapter(storeRecyclerViewAdapter);
                     recyclerView.setLayoutManager(new LinearLayoutManager(ShopActivity.this));
+                    if (swipeRefreshLayout.isRefreshing()) {
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
                 }
 
                 @Override
@@ -257,11 +273,13 @@ public class ShopActivity extends AppCompatActivity {
 
     public void DeleteStore(final String key, final String urlimage) {
 
+        //System.out.println("Key store: "+key+"\nUrl image: "+urlimage);
         firebaseStorage = FirebaseStorage.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
 
         DatabaseReference reference = firebaseDatabase.getReference("Store");
-        reference.child(key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+        reference.child(getSharedPreferences("Account", Context.MODE_PRIVATE)
+                .getString("userID", "")).child(key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 System.out.println("Delete store infor success");
@@ -299,54 +317,54 @@ public class ShopActivity extends AppCompatActivity {
                         }
                     });
                 }
+
+                //get drink and delete image drink
+                firebaseDatabase.getReference("Product").child(key).child("Drink")
+                        .addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                    Drink drink = snapshot.getValue(Drink.class);
+
+                                    firebaseStorage.getReferenceFromUrl(drink.getUrlimage()).delete()
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    System.out.println("Delete image drink success");
+                                                }
+                                            }).addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            System.out.println("Delete image drink failed: " + e.getMessage());
+                                        }
+                                    });
+                                }
+
+                                //delete product infor of store
+                                firebaseDatabase.getReference("Product").child(key).removeValue()
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                System.out.println("Delete infor product success");
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        System.out.println("Delete infor product failed: " + e.getMessage());
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
-
-        //get drink and delete image drink
-        firebaseDatabase.getReference("Product").child(key).child("Drink")
-                .addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    Drink drink = snapshot.getValue(Drink.class);
-
-                    firebaseStorage.getReferenceFromUrl(drink.getUrlimage()).delete()
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            System.out.println("Delete image drink success");
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            System.out.println("Delete image drink failed: "+e.getMessage());
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        //delete product infor of store
-        firebaseDatabase.getReference("Product").child(key).removeValue()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                System.out.println("Delete infor product success");
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                System.out.println("Delete infor product failed: "+e.getMessage());
             }
         });
     }

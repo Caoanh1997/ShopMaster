@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -23,13 +24,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.caoan.shopmaster.Adapter.DrinkAdapter;
-import com.example.caoan.shopmaster.Adapter.FoodAdapter;
 import com.example.caoan.shopmaster.AddDrinkActivity;
 import com.example.caoan.shopmaster.EditDrinkActivity;
 import com.example.caoan.shopmaster.Model.Drink;
-import com.example.caoan.shopmaster.Model.Drink;
-import com.example.caoan.shopmaster.Model.Food;
-import com.example.caoan.shopmaster.ProductActivity;
 import com.example.caoan.shopmaster.R;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -61,6 +58,7 @@ public class DrinkFragment extends Fragment {
     private List<Drink> drinkList;
     private DrinkAdapter adapter;
     private DatabaseReference reference;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     public DrinkFragment() {
         // Required empty public constructor
@@ -90,6 +88,10 @@ public class DrinkFragment extends Fragment {
         btnadddrink = view.findViewById(R.id.btnadddrink);
         progressBar = view.findViewById(R.id.progress);
         fab = view.findViewById(R.id.fab);
+        swipeRefreshLayout = view.findViewById(R.id.refresh_layout);
+
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
+        swipeRefreshLayout.setProgressBackgroundColorSchemeResource(R.color.colorAccent);
 
         Bundle bundle = getArguments();
         key = bundle.getString("s");
@@ -102,6 +104,13 @@ public class DrinkFragment extends Fragment {
         reference = firebaseDatabase.getReference("Product").child(key)
                 .child("Drink");
         Load();
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                drinkList.clear();
+                Load();
+            }
+        });
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -212,6 +221,9 @@ public class DrinkFragment extends Fragment {
                 progressBar.setVisibility(View.INVISIBLE);
                 gridView.setAdapter(adapter);
                 gridView.invalidateViews();
+                if (swipeRefreshLayout.isRefreshing()) {
+                    swipeRefreshLayout.setRefreshing(false);
+                }
             }
 
             @Override

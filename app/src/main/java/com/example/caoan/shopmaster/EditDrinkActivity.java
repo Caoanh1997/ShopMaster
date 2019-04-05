@@ -5,13 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.AsyncTask;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,10 +25,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.UUID;
 
 public class EditDrinkActivity extends AppCompatActivity {
@@ -54,6 +51,7 @@ public class EditDrinkActivity extends AppCompatActivity {
     private String namefile;
     private String urlImage;
     private Drink drink;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,14 +66,20 @@ public class EditDrinkActivity extends AppCompatActivity {
         etdescription = findViewById(R.id.etdescription);
         etprice = findViewById(R.id.etprice);
 
-        btnsave.setEnabled(false);
-        btncancel.setEnabled(false);
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Drink Updating....");
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(true);
+
+        btnsave.setEnabled(true);
+        btncancel.setEnabled(true);
         Intent intent = getIntent();
         drink = (Drink) intent.getSerializableExtra("Drink");
         etnamedrink.setText(drink.getName());
         etdescription.setText(drink.getDescription());
         etprice.setText(String.valueOf(drink.getPrice()));
-        new ProcessImage(imagedrink).execute(drink.getUrlimage());
+        //new ProcessImage(imagedrink).execute(drink.getUrlimage());
+        Picasso.get().load(drink.getUrlimage()).into(imagedrink);
         btnchooseImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -86,12 +90,13 @@ public class EditDrinkActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(checkInput(etnamedrink) && checkInput(etdescription) && checkInput(etprice)){
+                    progressDialog.show();
                     if(filePath != null && filePath.toString() != drink.getUrlimage()){
                         deleteOldImageDrink();
-                        new ProcessDeleteOldImage().execute();
+                        //new ProcessDeleteOldImage().execute();
                     }else {
                         uploadDrink(drink.getUrlimage());
-                        new ProcessUploadDrink().execute();
+                        //new ProcessUploadDrink().execute();
                     }
                 }
             }
@@ -111,6 +116,8 @@ public class EditDrinkActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Void aVoid) {
                 System.out.println("Delete old image success");
+                uploadImage();
+
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -120,46 +127,46 @@ public class EditDrinkActivity extends AppCompatActivity {
         });
     }
 
-    class ProcessDeleteOldImage extends AsyncTask<Void, Integer, Void> {
-        private ProgressDialog progressDialog;
-        @Override
-        protected void onPreExecute() {
-            progressDialog = new ProgressDialog(EditDrinkActivity.this);
-            progressDialog.setMessage("Image Deleting...");
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            progressDialog.setProgress(0);
-            progressDialog.setMax(100);
-            progressDialog.show();
-            super.onPreExecute();
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            progressDialog.dismiss();
-            uploadImage();
-            new ProcessUploadImage().execute();
-            super.onPostExecute(aVoid);
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            progressDialog.setProgress(values[0]);
-            super.onProgressUpdate(values);
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            for(int i=1;i<=100;i++){
-                publishProgress(i);
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            return null;
-        }
-    }
+//    class ProcessDeleteOldImage extends AsyncTask<Void, Integer, Void> {
+//        private ProgressDialog progressDialog;
+//        @Override
+//        protected void onPreExecute() {
+//            progressDialog = new ProgressDialog(EditDrinkActivity.this);
+//            progressDialog.setMessage("Image Deleting...");
+//            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+//            progressDialog.setProgress(0);
+//            progressDialog.setMax(100);
+//            progressDialog.show();
+//            super.onPreExecute();
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Void aVoid) {
+//            progressDialog.dismiss();
+//            uploadImage();
+//            new ProcessUploadImage().execute();
+//            super.onPostExecute(aVoid);
+//        }
+//
+//        @Override
+//        protected void onProgressUpdate(Integer... values) {
+//            progressDialog.setProgress(values[0]);
+//            super.onProgressUpdate(values);
+//        }
+//
+//        @Override
+//        protected Void doInBackground(Void... voids) {
+//            for(int i=1;i<=100;i++){
+//                publishProgress(i);
+//                try {
+//                    Thread.sleep(50);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//            return null;
+//        }
+//    }
 
     private void uploadImage() {
         namefile = UUID.randomUUID().toString();
@@ -170,6 +177,7 @@ public class EditDrinkActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     System.out.println("Upload image success");
+                    getUrlImage();
                 }
             });
         }
@@ -182,88 +190,88 @@ public class EditDrinkActivity extends AppCompatActivity {
         return key;
     }
 
-    class ProcessUploadImage extends AsyncTask<Void, Integer, Void>{
-        private ProgressDialog progressDialog;
-        @Override
-        protected void onPreExecute() {
-            progressDialog = new ProgressDialog(EditDrinkActivity.this);
-            progressDialog.setMessage("Image Uploading...");
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            progressDialog.setProgress(0);
-            progressDialog.setMax(100);
-            progressDialog.show();
-            super.onPreExecute();
-        }
+//    class ProcessUploadImage extends AsyncTask<Void, Integer, Void>{
+//        private ProgressDialog progressDialog;
+//        @Override
+//        protected void onPreExecute() {
+//            progressDialog = new ProgressDialog(EditDrinkActivity.this);
+//            progressDialog.setMessage("Image Uploading...");
+//            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+//            progressDialog.setProgress(0);
+//            progressDialog.setMax(100);
+//            progressDialog.show();
+//            super.onPreExecute();
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Void aVoid) {
+//            progressDialog.dismiss();
+//            String url = getUrlImage();
+//            new ProcessGetLink().execute();
+//            super.onPostExecute(aVoid);
+//        }
+//
+//        @Override
+//        protected void onProgressUpdate(Integer... values) {
+//            progressDialog.setProgress(values[0]);
+//            super.onProgressUpdate(values);
+//        }
+//
+//        @Override
+//        protected Void doInBackground(Void... voids) {
+//            for(int i=1;i<=100;i++){
+//                publishProgress(i);
+//                try {
+//                    Thread.sleep(50);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//            return null;
+//        }
+//    }
 
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            progressDialog.dismiss();
-            String url = getUrlImage();
-            new ProcessGetLink().execute();
-            super.onPostExecute(aVoid);
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            progressDialog.setProgress(values[0]);
-            super.onProgressUpdate(values);
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            for(int i=1;i<=100;i++){
-                publishProgress(i);
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            return null;
-        }
-    }
-
-    class ProcessGetLink extends AsyncTask<Void ,Integer, Void>{
-        private ProgressDialog progressDialog;
-        @Override
-        protected void onPreExecute() {
-            progressDialog = new ProgressDialog(EditDrinkActivity.this);
-            progressDialog.setMessage("Link getting...");
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            progressDialog.setProgress(0);
-            progressDialog.setMax(100);
-            progressDialog.show();
-            super.onPreExecute();
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            progressDialog.dismiss();
-            System.out.println(getUrlImage());
-            uploadDrink(getUrlImage());
-            new ProcessUploadDrink().execute();
-            super.onPostExecute(aVoid);
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            progressDialog.setProgress(values[0]);
-            super.onProgressUpdate(values);
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            for(int i=1;i<=100;i++){
-                publishProgress(i);
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            return null;
-        }
-    }
+//    class ProcessGetLink extends AsyncTask<Void ,Integer, Void>{
+//        private ProgressDialog progressDialog;
+//        @Override
+//        protected void onPreExecute() {
+//            progressDialog = new ProgressDialog(EditDrinkActivity.this);
+//            progressDialog.setMessage("Link getting...");
+//            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+//            progressDialog.setProgress(0);
+//            progressDialog.setMax(100);
+//            progressDialog.show();
+//            super.onPreExecute();
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Void aVoid) {
+//            progressDialog.dismiss();
+//            System.out.println(getUrlImage());
+//            uploadDrink(getUrlImage());
+//            new ProcessUploadDrink().execute();
+//            super.onPostExecute(aVoid);
+//        }
+//
+//        @Override
+//        protected void onProgressUpdate(Integer... values) {
+//            progressDialog.setProgress(values[0]);
+//            super.onProgressUpdate(values);
+//        }
+//
+//        @Override
+//        protected Void doInBackground(Void... voids) {
+//            for(int i=1;i<=100;i++){
+//                publishProgress(i);
+//                try {
+//                    Thread.sleep(50);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//            return null;
+//        }
+//    }
 
     private void uploadDrink(String urlImage) {
         firebaseDatabase = FirebaseDatabase.getInstance();
@@ -277,48 +285,51 @@ public class EditDrinkActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Void aVoid) {
                 System.out.println("Upload drink success");
+                progressDialog.dismiss();
+                finish();
+                startActivity(new Intent(EditDrinkActivity.this, ProductActivity.class).putExtra("tab", 1));
             }
         });
     }
-    class ProcessUploadDrink extends AsyncTask<Void, Integer, Void>{
-        private ProgressDialog progressDialog;
-        @Override
-        protected void onPreExecute() {
-            progressDialog = new ProgressDialog(EditDrinkActivity.this);
-            progressDialog.setMessage("Drink Uploading...");
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            progressDialog.setProgress(0);
-            progressDialog.setMax(100);
-            progressDialog.show();
-            super.onPreExecute();
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            progressDialog.dismiss();
-            startActivity(new Intent(EditDrinkActivity.this, ProductActivity.class));
-            super.onPostExecute(aVoid);
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            progressDialog.setProgress(values[0]);
-            super.onProgressUpdate(values);
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            for(int i=1;i<=100;i++){
-                publishProgress(i);
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            return null;
-        }
-    }
+//    class ProcessUploadDrink extends AsyncTask<Void, Integer, Void>{
+//        private ProgressDialog progressDialog;
+//        @Override
+//        protected void onPreExecute() {
+//            progressDialog = new ProgressDialog(EditDrinkActivity.this);
+//            progressDialog.setMessage("Drink Uploading...");
+//            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+//            progressDialog.setProgress(0);
+//            progressDialog.setMax(100);
+//            progressDialog.show();
+//            super.onPreExecute();
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Void aVoid) {
+//            progressDialog.dismiss();
+//            startActivity(new Intent(EditDrinkActivity.this, ProductActivity.class));
+//            super.onPostExecute(aVoid);
+//        }
+//
+//        @Override
+//        protected void onProgressUpdate(Integer... values) {
+//            progressDialog.setProgress(values[0]);
+//            super.onProgressUpdate(values);
+//        }
+//
+//        @Override
+//        protected Void doInBackground(Void... voids) {
+//            for(int i=1;i<=100;i++){
+//                publishProgress(i);
+//                try {
+//                    Thread.sleep(50);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//            return null;
+//        }
+//    }
 
     private String getUrlImage() {
         firebaseStorage = FirebaseStorage.getInstance();
@@ -328,6 +339,8 @@ public class EditDrinkActivity extends AppCompatActivity {
             public void onSuccess(Uri uri) {
                 urlImage = uri.toString();
                 System.out.println("Get link success");
+                uploadDrink(urlImage);
+
             }
         });
         return urlImage;
@@ -364,48 +377,48 @@ public class EditDrinkActivity extends AppCompatActivity {
         }
     }
 
-    class ProcessImage extends AsyncTask<String, Integer,Bitmap>{
-
-        private ImageView imageView;
-        private ProgressDialog progressDialog;
-
-        public ProcessImage(ImageView imageView) {
-            this.imageView = imageView;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            progressDialog = new ProgressDialog(EditDrinkActivity.this);
-            progressDialog.setCancelable(false);
-            progressDialog.setIndeterminate(true);
-            progressDialog.setMessage("Loading...");
-            progressDialog.show();
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            imageView.setImageBitmap(bitmap);
-            progressDialog.dismiss();
-            btnsave.setEnabled(true);
-            btncancel.setEnabled(true);
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            super.onProgressUpdate(values);
-        }
-
-        @Override
-        protected Bitmap doInBackground(String... strings) {
-            Bitmap bitmap=null;
-            String urlImage = strings[0];
-            try {
-                InputStream inputStream = new URL(urlImage).openStream();
-                bitmap = BitmapFactory.decodeStream(inputStream);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return bitmap;
-        }
-    }
+//    class ProcessImage extends AsyncTask<String, Integer,Bitmap>{
+//
+//        private ImageView imageView;
+//        private ProgressDialog progressDialog;
+//
+//        public ProcessImage(ImageView imageView) {
+//            this.imageView = imageView;
+//        }
+//
+//        @Override
+//        protected void onPreExecute() {
+//            progressDialog = new ProgressDialog(EditDrinkActivity.this);
+//            progressDialog.setCancelable(false);
+//            progressDialog.setIndeterminate(true);
+//            progressDialog.setMessage("Loading...");
+//            progressDialog.show();
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Bitmap bitmap) {
+//            imageView.setImageBitmap(bitmap);
+//            progressDialog.dismiss();
+//            btnsave.setEnabled(true);
+//            btncancel.setEnabled(true);
+//        }
+//
+//        @Override
+//        protected void onProgressUpdate(Integer... values) {
+//            super.onProgressUpdate(values);
+//        }
+//
+//        @Override
+//        protected Bitmap doInBackground(String... strings) {
+//            Bitmap bitmap=null;
+//            String urlImage = strings[0];
+//            try {
+//                InputStream inputStream = new URL(urlImage).openStream();
+//                bitmap = BitmapFactory.decodeStream(inputStream);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//            return bitmap;
+//        }
+//    }
 }

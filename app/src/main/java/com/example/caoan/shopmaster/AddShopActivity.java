@@ -5,13 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.AsyncTask;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.ContextMenu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -19,7 +17,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.example.caoan.shopmaster.Model.Store;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -30,7 +27,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
-import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -277,11 +273,13 @@ public class AddShopActivity extends AppCompatActivity {
 
                             store = new Store(key_store,name,duong,xa,huyen,tinh,userkey,url,phone);
                             System.out.println(store.toString());
-                            databaseReference.child(key_store).setValue(store).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            databaseReference.child(getSharedPreferences("Account", Context.MODE_PRIVATE)
+                                    .getString("userID", "")).child(key_store).setValue(store).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     System.out.println("Upload thành công");
                                     progressDialog.dismiss();
+                                    finish();
                                     startActivity(new Intent(AddShopActivity.this,ShopActivity.class));
                                 }
                             }).addOnFailureListener(new OnFailureListener() {

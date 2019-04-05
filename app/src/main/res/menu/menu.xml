@@ -7,13 +7,6 @@
         android:title="Search"
         android:icon="@drawable/ic_search"
         app:showAsAction="always"/>
-    <item android:id="@+id/add"
-        android:title="Add"
-        app:showAsAction="never"
-        android:icon="@drawable/ic_add"/>
-    <item android:id="@+id/refresh"
-        android:title="Refresh"
-        app:showAsAction="never"/>
     <item android:id="@+id/logout"
         android:title="Logout"
         app:showAsAction="never"/>
@@ -24,12 +17,6 @@
         android:title="Go to shop"
         app:showAsAction="never"/>
     <item android:id="@+id/manage"
-        android:title="Quản lý đơn hàng mới"
-        app:showAsAction="never"/>
-    <item android:id="@+id/transport"
-        android:title="Đơn hàng đang giao"
-        app:showAsAction="never"/>
-    <item android:id="@+id/delivered"
-        android:title="Đơn hàng đã giao"
+        android:title="Quản lý đơn hàng"
         app:showAsAction="never"/>
 </menu>

@@ -6,15 +6,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.caoan.shopmaster.EventBus.BillEvent;
 import com.example.caoan.shopmaster.EventBus.FailedEvent;
 import com.example.caoan.shopmaster.EventBus.LoadEvent;
 import com.example.caoan.shopmaster.EventBus.SucessEvent;
 import com.example.caoan.shopmaster.Model.Bill;
 import com.example.caoan.shopmaster.Model.Cart;
+import com.example.caoan.shopmaster.Model.Store;
 import com.example.caoan.shopmaster.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,10 +26,11 @@ import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class BillTransportAdapter extends BaseExpandableListAdapter {
+public class BillTransportAdapter extends BaseExpandableListAdapter implements Filterable {
 
     private Context context;
     private List<Bill> billList;
@@ -39,12 +42,14 @@ public class BillTransportAdapter extends BaseExpandableListAdapter {
     private List<Cart> cartList;
     private Fragment fragment;
     private Bill item;
+    private List<Bill> filter;
 
     public BillTransportAdapter(Context context, List<Bill> billList, HashMap<Bill, List<Cart>> listDetailBill, Fragment fragment) {
         this.context = context;
         this.billList = billList;
         ListDetailBill = listDetailBill;
         this.fragment = fragment;
+        this.filter = billList;
     }
 
     @Override
@@ -90,6 +95,7 @@ public class BillTransportAdapter extends BaseExpandableListAdapter {
             view = layoutInflater.inflate(R.layout.bill_item_transport_layout,null);
         }
         TextView tvkeycart = view.findViewById(R.id.tvkeycart);
+        final TextView tvstore = view.findViewById(R.id.tvstore);
         TextView tvdateput = view.findViewById(R.id.tvdateput);
         TextView tvdatepay = view.findViewById(R.id.tvdatepay);
         TextView tvname = view.findViewById(R.id.tvname);
@@ -101,6 +107,18 @@ public class BillTransportAdapter extends BaseExpandableListAdapter {
         TextView tvsuccess = view.findViewById(R.id.tvsuccess);
 
         tvkeycart.setText("Mã đơn hàng: " + bill.getKey_cart());
+        FirebaseDatabase.getInstance().getReference("Store").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Store store = dataSnapshot.child(bill.getKey_store()).getValue(Store.class);
+                tvstore.setText(store.getName());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
         tvdateput.setText("Ngày đặt: " + bill.getDatetime());
         tvdatepay.setText("Ngày thanh toán: " + bill.getDatetime_delivered());
         tvsumprice.setText("Tổng tiền: " + bill.getTotal_price() + "đ");
@@ -189,5 +207,38 @@ public class BillTransportAdapter extends BaseExpandableListAdapter {
     }
     public void getUserID(){
         userID = context.getSharedPreferences("Account",Context.MODE_PRIVATE).getString("userID","");
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                FilterResults results = new FilterResults();
+                List<Bill> suggestion = new ArrayList<>();
+
+                if (charSequence == null || charSequence.length() == 0) {
+                    suggestion.addAll(filter);
+                } else {
+                    String str = BillExpandListAdapter.convertString(charSequence.toString().trim().toLowerCase());
+                    for (Bill bill : filter) {
+                        if (BillExpandListAdapter.convertString(bill.getName_user().toLowerCase().trim()).contains(str)
+                                || bill.getDatetime().contains(str)) {
+                            suggestion.add(bill);
+                        }
+                    }
+                }
+                results.count = suggestion.size();
+                results.values = suggestion;
+
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                billList = (List<Bill>) filterResults.values;
+                notifyDataSetChanged();
+            }
+        };
     }
 }

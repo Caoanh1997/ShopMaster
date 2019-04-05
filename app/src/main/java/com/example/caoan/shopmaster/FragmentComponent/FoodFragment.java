@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -26,7 +27,6 @@ import com.example.caoan.shopmaster.Adapter.FoodAdapter;
 import com.example.caoan.shopmaster.AddFoodActivity;
 import com.example.caoan.shopmaster.EditFoodActivity;
 import com.example.caoan.shopmaster.Model.Food;
-import com.example.caoan.shopmaster.ProductActivity;
 import com.example.caoan.shopmaster.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -57,6 +57,7 @@ public class FoodFragment extends Fragment {
     private String key;
     private FloatingActionButton fab;
     private DatabaseReference reference;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     public FoodFragment() {
         // Required empty public constructor
@@ -87,6 +88,10 @@ public class FoodFragment extends Fragment {
         btnaddfood = view.findViewById(R.id.btnaddfood);
         progressBar = view.findViewById(R.id.progress);
         fab = view.findViewById(R.id.fab);
+        swipeRefreshLayout = view.findViewById(R.id.refresh_layout);
+
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
+        swipeRefreshLayout.setProgressBackgroundColorSchemeResource(R.color.colorAccent);
 
         Bundle bundle = getArguments();
         key = bundle.getString("s");
@@ -99,6 +104,13 @@ public class FoodFragment extends Fragment {
         reference = firebaseDatabase.getReference("Product").child(key)
                 .child("Food");
         Load();
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                foodList.clear();
+                Load();
+            }
+        });
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -295,6 +307,9 @@ public class FoodFragment extends Fragment {
                 progressBar.setVisibility(View.INVISIBLE);
                 gridView.setAdapter(adapter);
                 gridView.invalidateViews();
+                if (swipeRefreshLayout.isRefreshing()) {
+                    swipeRefreshLayout.setRefreshing(false);
+                }
             }
 
             @Override

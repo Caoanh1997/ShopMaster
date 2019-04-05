@@ -8,10 +8,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -92,11 +92,9 @@ public class EditFoodActivity extends AppCompatActivity {
                     if(filePath != null && filePath.toString() != food.getUrlimage()){
                         System.out.println("image mới");
                         deleteOldImageFood();
-                        //new ProcessDeleteOldImage().execute();
                     }else {
                         System.out.println("image cũ");
                         uploadFood(food.getUrlimage());
-                        //new ProcessUploadFood().execute();
                     }
                 }
             }
@@ -155,6 +153,7 @@ public class EditFoodActivity extends AppCompatActivity {
                                         public void onSuccess(Void aVoid) {
                                             System.out.println("Upload food success");
                                             progressDialog.dismiss();
+                                            finish();
                                             startActivity(new Intent(EditFoodActivity.this,ProductActivity.class ));
                                         }
                                     }).addOnFailureListener(new OnFailureListener() {

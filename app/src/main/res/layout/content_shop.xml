@@ -40,12 +40,18 @@
         <!--android:layoutMode="clipBounds"-->
         <!--android:layout_marginTop="5dp">-->
     <!--</ListView>-->
-    <android.support.v7.widget.RecyclerView
+    <android.support.v4.widget.SwipeRefreshLayout
         android:layout_below="@+id/tv"
-        android:id="@+id/rcvstore"
+        android:id="@+id/refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </android.support.v7.widget.RecyclerView>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rcvstore"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
 
 </RelativeLayout>

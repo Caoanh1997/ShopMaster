@@ -60,4 +60,7 @@
     </string-array>
     <string name="title_activity_add_food_example">AddFoodExample</string>
     <string name="title_activity_shop">ShopActivity</string>
+    <string name="search_name">Search for name</string>
+    <string name="search_date">Search for date</string>
+    <string name="pick_date">Pick date</string>
 </resources>
