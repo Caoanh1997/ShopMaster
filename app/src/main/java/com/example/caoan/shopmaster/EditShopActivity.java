@@ -6,11 +6,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -360,7 +360,7 @@ public class EditShopActivity extends AppCompatActivity {
         progressDialog.setIndeterminate(true);
         progressDialog.show();
 
-        String key_store = store.getKey();
+        final String key_store = store.getKey();
         String name = String.valueOf(etnamestore.getText());
         String duong = String.valueOf(etaddress.getText());
         String xa = String.valueOf(spinnerxa.getTag());
@@ -369,14 +369,21 @@ public class EditShopActivity extends AppCompatActivity {
         String userkey = firebaseUser.getUid();
         String phone = String.valueOf(etphone.getText());
 
-        Store store = new Store(key_store,name,duong,xa,huyen,tinh,userkey,urlImage,phone);
+        final Store store = new Store(key_store, name, duong, xa, huyen, tinh, userkey, urlImage, phone);
         System.out.println(store.toString());
         databaseReference.child(key_store).setValue(store).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                System.out.println("Upload Store success");
-                progressDialog.dismiss();
-                startActivity(new Intent(EditShopActivity.this,ShopActivity.class));
+                FirebaseDatabase.getInstance().getReference("Shopmaster").child(key_store)
+                        .setValue(store).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        System.out.println("Upload Store success");
+                        progressDialog.dismiss();
+                        finish();
+                        startActivity(new Intent(EditShopActivity.this, ShopActivity.class));
+                    }
+                });
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override

@@ -282,14 +282,20 @@ public class ShopActivity extends AppCompatActivity {
                 .getString("userID", "")).child(key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                System.out.println("Delete store infor success");
-                StorageReference storageReference = firebaseStorage.getReferenceFromUrl(urlimage);
-                storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                FirebaseDatabase.getInstance().getReference("Shopmaster").child(key)
+                        .removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        System.out.println("Delete image store success");
-                        storeList.clear();
-                        Load();
+                        System.out.println("Delete store infor success");
+                        StorageReference storageReference = firebaseStorage.getReferenceFromUrl(urlimage);
+                        storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                System.out.println("Delete image store success");
+                                storeList.clear();
+                                Load();
+                            }
+                        });
                     }
                 });
             }

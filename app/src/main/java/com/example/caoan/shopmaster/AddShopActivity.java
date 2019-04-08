@@ -277,10 +277,16 @@ public class AddShopActivity extends AppCompatActivity {
                                     .getString("userID", "")).child(key_store).setValue(store).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
-                                    System.out.println("Upload thành công");
-                                    progressDialog.dismiss();
-                                    finish();
-                                    startActivity(new Intent(AddShopActivity.this,ShopActivity.class));
+                                    FirebaseDatabase.getInstance().getReference("Shopmaster").child(key_store)
+                                            .setValue(store).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            System.out.println("Upload thành công");
+                                            progressDialog.dismiss();
+                                            finish();
+                                            startActivity(new Intent(AddShopActivity.this, ShopActivity.class));
+                                        }
+                                    });
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override

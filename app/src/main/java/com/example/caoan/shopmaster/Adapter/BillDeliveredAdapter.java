@@ -104,11 +104,16 @@ public class BillDeliveredAdapter extends BaseExpandableListAdapter implements F
         TextView tvstate = view.findViewById(R.id.tvstate);
 
         tvkeycart.setText("Mã đơn hàng: " + bill.getKey_cart());
-        FirebaseDatabase.getInstance().getReference("Store").addValueEventListener(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference("Shopmaster").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Store store = dataSnapshot.child(bill.getKey_store()).getValue(Store.class);
-                tvstore.setText(store.getName());
+                if (store != null) {
+                    tvstore.setText("Cửa hàng: " + store.getName());
+                } else {
+                    tvstore.setText("Cửa hàng không tồn tại hoặc đã xóa");
+                }
+
             }
 
             @Override
