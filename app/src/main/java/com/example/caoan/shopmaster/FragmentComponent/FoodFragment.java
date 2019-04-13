@@ -125,7 +125,7 @@ public class FoodFragment extends Fragment {
                 final Food food = (Food) adapterView.getItemAtPosition(i);
                 final String key_food = ((Food) adapterView.getItemAtPosition(i)).getKey();
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setTitle("Choose action");
+                builder.setTitle("Chọn hàng động");
                 view = getLayoutInflater().inflate(R.layout.product_action_layout, null);
                 builder.setView(view);
                 final AlertDialog alertDialog = builder.create();
@@ -140,22 +140,22 @@ public class FoodFragment extends Fragment {
                     public void onClick(View view) {
                         alertDialog.dismiss();
                         new AlertDialog.Builder(getContext())
-                                .setTitle("Warning").setMessage("Are you sure delete this product?")
-                                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                .setTitle("Cảnh báo").setMessage("Bạn có chắc chắn muốn xóa sản phẩm này?")
+                                .setPositiveButton("Có", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(final DialogInterface dialogInterface, int i) {
                                         StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(food.getUrlimage());
                                         storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
                                             public void onSuccess(Void aVoid) {
-                                                System.out.println("Delete Image Food success");
+                                                //System.out.println("Delete Image Food success");
                                                 DatabaseReference reference = firebaseDatabase.getReference("Product").child(key)
                                                         .child("Food");
 
                                                 reference.child(key_food).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
                                                     public void onSuccess(Void aVoid) {
-                                                        System.out.println("Delete food success");
+                                                        //System.out.println("Delete food success");
                                                         dialogInterface.dismiss();
                                                         foodList.clear();
                                                         Load();
@@ -175,7 +175,7 @@ public class FoodFragment extends Fragment {
                                             }
                                         });
                                     }
-                                }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                }).setNegativeButton("Không", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 dialogInterface.dismiss();

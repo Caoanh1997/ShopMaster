@@ -46,6 +46,7 @@ public class BillExpandListAdapter extends BaseExpandableListAdapter implements 
     private Bill item;
     private List<Bill> filter;
     private List<Store> list_store;
+    //private String token;
 
     public BillExpandListAdapter(Context context, List<Bill> billList, HashMap<Bill, List<Cart>> listDetailBill, Fragment fragment) {
         this.context = context;
@@ -54,7 +55,6 @@ public class BillExpandListAdapter extends BaseExpandableListAdapter implements 
         this.fragment = fragment;
         this.filter = billList;
         list_store = new ArrayList<>();
-
     }
 
     public void getUserInfor() {
@@ -144,6 +144,7 @@ public class BillExpandListAdapter extends BaseExpandableListAdapter implements 
 
     @Override
     public View getGroupView(int i, boolean b, View view, ViewGroup viewGroup) {
+        //getToken_master();
         final Bill bill = (Bill) getGroup(i);
         cartList = ListDetailBill.get(bill);
         if (view == null) {
@@ -260,6 +261,11 @@ public class BillExpandListAdapter extends BaseExpandableListAdapter implements 
             }
         });
     }
+
+    /*public void getToken_master() {
+        token = context.getSharedPreferences("Account",Context.MODE_PRIVATE)
+                .getString("token","");
+    }*/
 
     @Override
     public Filter getFilter() {

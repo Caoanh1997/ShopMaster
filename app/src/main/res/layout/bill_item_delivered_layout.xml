@@ -75,7 +75,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
-                android:text="Sum price"
+                android:text="Tổng giá"
                 android:textColor="@color/red"
                 android:textSize="20sp" />
 
@@ -85,7 +85,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:text="State"
+                android:text="Tình trạng"
                 android:textColor="@android:color/holo_orange_dark"
                 android:textSize="15sp"
                 android:textStyle="italic" />

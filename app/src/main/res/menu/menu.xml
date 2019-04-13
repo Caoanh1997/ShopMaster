@@ -8,15 +8,15 @@
         android:icon="@drawable/ic_search"
         app:showAsAction="always"/>
     <item android:id="@+id/logout"
-        android:title="Logout"
+        android:title="@string/logout"
         app:showAsAction="never"/>
     <item android:id="@+id/about"
-        android:title="About"
+        android:title="@string/about"
         app:showAsAction="never"/>
     <item android:id="@+id/shop"
-        android:title="Go to shop"
+        android:title="@string/go_to_shop"
         app:showAsAction="never"/>
     <item android:id="@+id/manage"
-        android:title="Quản lý đơn hàng"
+        android:title="@string/order_manager"
         app:showAsAction="never"/>
 </menu>

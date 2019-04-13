@@ -13,12 +13,21 @@
         <item>Thanh Khê</item>
         <item>Hải Châu</item>
         <item>Liên Chiểu</item>
+        <item>Cẩm Lệ</item>
+        <item>Ngũ Hành Sơn</item>
+        <item>Sơn Trà</item>
+        <item>Hòa Vang</item>
     </string-array>
     <string-array name="xaDN1">
         <item>Xã/phường</item>
         <item>Hòa Khê</item>
         <item>An Khê</item>
         <item>Vĩnh Trung</item>
+        <item>Chính Gián</item>
+        <item>Tam Thuận</item>
+        <item>Tân Chính</item>
+        <item>Thạc Gián</item>
+        <item>Xuân Hà</item>
     </string-array>
     <string-array name="xaDN2">
         <item>Xã/phường</item>
@@ -27,40 +36,181 @@
         <item>Hòa Cường Bắc</item>
         <item>Hòa Cường Nam</item>
         <item>Thuận Phước</item>
+        <item>Thanh Bình</item>
+        <item>Thạch Thang</item>
+        <item>Phước Ninh</item>
+        <item>Hòa Thuận Tây</item>
+        <item>Hòa Thuận Đông</item>
     </string-array>
     <string-array name="xaDN3">
         <item>Xã/phường</item>
         <item>Hòa Khánh Nam</item>
         <item>Hòa Khánh Bắc</item>
         <item>Hòa Minh</item>
+        <item>Hòa Hiệp Bắc</item>
+        <item>Hòa Hiệp Nam</item>
+    </string-array>
+    <string-array name="xaDN4">
+        <item>Xã/phường</item>
+        <item>Hòa An</item>
+        <item>Hòa Phát</item>
+        <item>Hòa Xuân</item>
+        <item>Hòa Thọ Đông</item>
+        <item>Hòa Thọ Tây</item>
+    </string-array>
+    <string-array name="xaDN5">
+        <item>Xã/phường</item>
+        <item>Hòa Hải</item>
+        <item>Hòa Quý</item>
+        <item>Mỹ An</item>
+        <item>Khuê Mỹ</item>
+    </string-array>
+    <string-array name="xaDN6">
+        <item>Xã/phường</item>
+        <item>An Hải Bắc</item>
+        <item>An Hải Đông</item>
+        <item>An Hải Tây</item>
+        <item>Mân Thái</item>
+        <item>Phước Mỹ</item>
+        <item>Thọ Quang</item>
+    </string-array>
+    <string-array name="xaDN7">
+        <item>Xã/phường</item>
+        <item>Hòa Bắc</item>
+        <item>Hòa Châu</item>
+        <item>Hòa Khương</item>
+        <item>Hòa Phú</item>
+        <item>Hòa Phước</item>
+        <item>Hòa Tiến</item>
+        <item>Hòa Ninh</item>
+        <item>Hòa Nhơn</item>
+        <item>Hòa Liên</item>
     </string-array>
     <string-array name="huyenQN">
         <item>Quận/huyện</item>
         <item>Điện Bàn</item>
         <item>Đại Lộc</item>
         <item>Duy Xuyên</item>
+        <item>Tam Kỳ</item>
+        <item>Hội An</item>
+        <item>Tiên Phước</item>
+        <item>Quế Sơn</item>
+        <item>Núi Thành</item>
     </string-array>
     <string-array name="xaQN1">
         <item>Xã/phường</item>
         <item>Điện Phước</item>
         <item>Điện Hồng</item>
         <item>Điện Thọ</item>
+        <item>Điện An</item>
+        <item>Điện Thắng Bắc</item>
+        <item>Điện Thắng Nam</item>
+        <item>Điện Phương</item>
+        <item>Vĩnh Điện</item>
     </string-array>
     <string-array name="xaQN2">
         <item>Xã/phường</item>
-        <item>Đại An</item>
+        <item>Ái Nghĩa</item>
         <item>Đại Cường</item>
         <item>Đại Đồng</item>
+        <item>Đại An</item>
+        <item>Đại Hưng</item>
+        <item>Đại Lãnh</item>
+        <item>Đại Hiệp</item>
+        <item>Đại Hòa</item>
     </string-array>
     <string-array name="xaQN3">
         <item>Xã/phường</item>
         <item>Duy Châu</item>
         <item>Duy Hải</item>
         <item>Duy Hòa</item>
+        <item>Nam Phước</item>
+        <item>Duy Tân</item>
+        <item>Duy Sơn</item>
+        <item>Duy Thành</item>
+        <item>Duy Trinh</item>
+    </string-array>
+    <string-array name="xaQN4">
+        <item>Xã/phường</item>
+        <item>An Mỹ</item>
+        <item>An Phú</item>
+        <item>An Xuân</item>
+        <item>Hòa Hương</item>
+        <item>Tam Thăng</item>
+        <item>Tam Thanh</item>
+        <item>Tam Phú</item>
+        <item>Tân Thạnh</item>
+    </string-array>
+    <string-array name="xaQN5">
+        <item>Xã/phường</item>
+        <item>Cẩm An</item>
+        <item>Cẩm Châu</item>
+        <item>Cẩm Nam</item>
+        <item>Cửa Đại</item>
+        <item>Minh An</item>
+        <item>Sơn Phong</item>
+        <item>Tân An</item>
+        <item>Thanh Hà</item>
+    </string-array>
+    <string-array name="xaQN6">
+        <item>Tiên An</item>
+        <item>Tiên Châu</item>
+        <item>Tiên Hiệp</item>
+        <item>Tiên Cảnh</item>
+        <item>Tiên Lộc</item>
+        <item>Tiên Thọ</item>
+        <item>Tiên Kỳ</item>
+        <item>Tiên Lãnh</item>
+    </string-array>
+    <string-array name="xaQN7">
+        <item>Hương An</item>
+        <item>Phú Thọ</item>
+        <item>Quế An</item>
+        <item>Quế Châu</item>
+        <item>Quế Cường</item>
+        <item>Quế Hiệp</item>
+        <item>Quế Long</item>
+        <item>Quế Minh</item>
+    </string-array>
+    <string-array name="xaQN8">
+        <item>Tam Hải</item>
+        <item>Tam Hiệp</item>
+        <item>Tam Hòa</item>
+        <item>Tam Nghĩa</item>
+        <item>Tam Thạnh</item>
+        <item>Tam Quang</item>
+        <item>Tam Sơn</item>
+        <item>Tam Giang</item>
     </string-array>
     <string name="title_activity_add_food_example">AddFoodExample</string>
     <string name="title_activity_shop">ShopActivity</string>
-    <string name="search_name">Search for name</string>
-    <string name="search_date">Search for date</string>
-    <string name="pick_date">Pick date</string>
+    <string name="search_name">Tìm theo tên khách hàng</string>
+    <string name="search_date">Tìm theo ngày</string>
+    <string name="pick_date">Chọn ngày</string>
+    <string name="my_store">Cửa hàng của tôi</string>
+    <string name="edit">Chỉnh sửa</string>
+    <string name="delete">Xóa</string>
+    <string name="logout">Đăng xuất</string>
+    <string name="order_manager">Quản lý đơn hàng</string>
+    <string name="go_to_shop">Đến cửa hàng</string>
+    <string name="about">Thông tin</string>
+    <string name="pick_image">Chọn ảnh</string>
+    <string name="name_store">Tên cửa hàng</string>
+    <string name="address">Số nhà,đường(thôn)</string>
+    <string name="phone">Số điện thoại</string>
+    <string name="create">Tạo</string>
+    <string name="cancel">Hủy bỏ</string>
+    <string name="name_drink">Tên thức uống</string>
+    <string name="description">Chi tiết sản phẩm</string>
+    <string name="price">Giá(vnđ)</string>
+    <string name="name_food">Tên thức ăn</string>
+    <string name="finish">Hoàn thành</string>
+    <string name="account">Tài khoản</string>
+    <string name="email">Email</string>
+    <string name="password">Mật khẩu</string>
+    <string name="name_user">Tên khách hàng</string>
+    <string name="sign_up">Đăng ký</string>
+    <string name="sign_in">Đăng nhập</string>
+    <string name="suggestion_sign_up">Chưa có tài khoản? Đăng ký ngay bây giờ.</string>
+    <string name="suggestion_sign_in">Đã có tài khoản? Đăng nhập ngay bây giờ.</string>
 </resources>

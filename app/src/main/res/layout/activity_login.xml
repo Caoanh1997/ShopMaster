@@ -21,7 +21,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Tài khoản"
+                android:text="@string/account"
                 android:textSize="35sp"
                 android:gravity="center"/>
 
@@ -31,7 +31,7 @@
                 android:layout_height="40dp"
                 android:layout_margin="5dp"
                 android:background="@drawable/state_edittext"
-                android:hint="nhập email"
+                android:hint="@string/email"
                 android:inputType="textEmailAddress"
                 android:paddingLeft="5dp" />
 
@@ -41,7 +41,7 @@
                 android:layout_height="40dp"
                 android:layout_margin="5dp"
                 android:background="@drawable/state_edittext"
-                android:hint="nhập mật khẩu"
+                android:hint="@string/password"
                 android:inputType="textPassword"
                 android:paddingLeft="5dp" />
 
@@ -51,7 +51,7 @@
                 android:layout_height="40dp"
                 android:layout_margin="5dp"
                 android:background="@drawable/state_edittext"
-                android:hint="nhập tên"
+                android:hint="@string/name_user"
                 android:inputType="text"
                 android:paddingLeft="5dp" />
 
@@ -90,7 +90,7 @@
                 android:layout_height="40dp"
                 android:layout_margin="5dp"
                 android:background="@drawable/state_edittext"
-                android:hint="số nhà, tên đường"
+                android:hint="@string/address"
                 android:inputType="text"
                 android:paddingLeft="5dp" />
 
@@ -100,7 +100,7 @@
                 android:layout_height="40dp"
                 android:layout_margin="5dp"
                 android:background="@drawable/state_edittext"
-                android:hint="nhập số điện thoại"
+                android:hint="@string/phone"
                 android:inputType="phone"
                 android:paddingLeft="5dp" />
 
@@ -111,7 +111,7 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="15dp"
                 android:background="@drawable/state_button"
-                android:text="Đăng nhập"
+                android:text="@string/sign_in"
                 android:textColor="@color/white" />
 
             <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
@@ -121,7 +121,7 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="15dp"
                 android:background="@drawable/state_button"
-                android:text="Đăng ký"
+                android:text="@string/sign_up"
                 android:textColor="@color/white" />
             <TextView
                 android:id="@+id/tvsignup"
@@ -129,7 +129,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:text="Chưa có tài khoản? Đăng ký ngay bây giờ."
+                android:text="@string/suggestion_sign_up"
                 android:textColor="@color/blue"
                 android:textSize="17sp" />
 
@@ -139,7 +139,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:text="Đã có tài khoản? Đăng nhập ngay bây giờ."
+                android:text="@string/suggestion_sign_in"
                 android:textColor="@color/blue"
                 android:textSize="17sp" />
 

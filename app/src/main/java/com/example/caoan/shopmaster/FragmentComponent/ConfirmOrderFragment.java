@@ -78,6 +78,7 @@ public class ConfirmOrderFragment extends Fragment {
     private Button btpick_date;
     private RelativeLayout layout_search;
     private TextView tvnumber_order;
+    //private String token;
 
     public ConfirmOrderFragment() {
         // Required empty public constructor
@@ -135,9 +136,8 @@ public class ConfirmOrderFragment extends Fragment {
             }
         });
         userID = getActivity().getSharedPreferences("Account",Context.MODE_PRIVATE).getString("userID","");
-
+        //getToken_master();
         Load();
-
         btpick_date.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -181,6 +181,7 @@ public class ConfirmOrderFragment extends Fragment {
         databaseReference.child(userID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                //EventBus.getDefault().post(new ReadEvent(true,null));
                 List<Cart> cartList;
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Bill bill = snapshot.getValue(Bill.class);
@@ -191,7 +192,6 @@ public class ConfirmOrderFragment extends Fragment {
 
                     billList.add(b);
                     ListBillDetail.put(b, cartList);
-
                 }
                 progressBar.setVisibility(View.GONE);
                 if (billList.size() == 0) {
@@ -233,6 +233,11 @@ public class ConfirmOrderFragment extends Fragment {
         super.onDetach();
 
     }
+
+    /*public void getToken_master() {
+        token = getActivity().getSharedPreferences("Account",Context.MODE_PRIVATE)
+                .getString("token","");
+    }*/
 
     /**
      * This interface must be implemented by activities that contain this

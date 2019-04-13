@@ -3,6 +3,7 @@ package com.example.caoan.shopmaster;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -26,8 +27,11 @@ import com.example.caoan.shopmaster.Adapter.StoreRecyclerViewAdapter;
 import com.example.caoan.shopmaster.Model.Drink;
 import com.example.caoan.shopmaster.Model.Food;
 import com.example.caoan.shopmaster.Model.Store;
+import com.example.caoan.shopmaster.Service.DataChangeListener;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -35,6 +39,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -85,8 +92,6 @@ public class ShopActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
                 startActivity(new Intent(ShopActivity.this, AddShopActivity.class));
             }
         });
@@ -134,26 +139,48 @@ public class ShopActivity extends AppCompatActivity {
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
-        /*lvstore.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String key_store = ((Store) adapterView.getItemAtPosition(i)).getKey();
-                Toast.makeText(getApplicationContext(),key_store,Toast.LENGTH_SHORT).show();
-                SharedPreferences sharedPreferences = getSharedPreferences("key_store", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("key",key_store);
-                editor.commit();
-                startActivity(new Intent(ShopActivity.this,ProductActivity.class));
+            public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                if (!task.isSuccessful()) {
+                    System.out.println("Failed: " + task.getException());
+                } else {
+                    String token = task.getResult().getToken();
+                    System.out.println(token);
+                    registrationTokentoServer(token);
+                    FirebaseMessaging.getInstance().subscribeToTopic("master1").addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                System.out.println("sub success");
+                            } else {
+                                System.out.println("sub failed: " + task.getException());
+                            }
+                        }
+                    });
+                }
             }
         });
+    }
 
-        lvstore.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+    private void registrationTokentoServer(String token) {
+        FirebaseDatabase.getInstance().getReference("Account").child(
+                getSharedPreferences("Account", Context.MODE_PRIVATE).getString("userID", ""))
+                .child("token").setValue(token).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                lvstore.setTag(i);
-                return false;
+            public void onSuccess(Void aVoid) {
+                System.out.println("registration token success");
             }
-        });*/
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                System.out.println("registration token failed: " + e.getMessage());
+            }
+        });
+        SharedPreferences sharedPreferences = getSharedPreferences("Account", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("token", token);
+        editor.commit();
     }
 
     @Override
@@ -204,6 +231,8 @@ public class ShopActivity extends AppCompatActivity {
         FirebaseUser user = firebaseAuth.getCurrentUser();
         if (user == null) {
             startActivity(new Intent(ShopActivity.this, LoginActivity.class));
+        } else {
+            startService(new Intent(ShopActivity.this, DataChangeListener.class));
         }
         super.onStart();
     }
@@ -373,5 +402,10 @@ public class ShopActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 }

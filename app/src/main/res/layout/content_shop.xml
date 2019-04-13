@@ -23,8 +23,9 @@
         android:layout_alignParentTop="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="My Store"
-        android:textSize="25sp"
+        android:text="@string/my_store"
+        android:textColor="@android:color/holo_blue_dark"
+        android:textSize="@dimen/text_size_normal_title"
         android:layout_gravity="center"
         android:id="@+id/tv"/>
     <ProgressBar

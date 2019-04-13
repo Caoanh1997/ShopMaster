@@ -1,44 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ProductActivity">
 
-    <TabHost
-        android:id="@android:id/tabhost"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
-            <TabWidget
-                android:layout_weight="0"
-                android:orientation="horizontal"
-                android:id="@android:id/tabs"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content">
+    <!--<TabHost-->
+    <!--android:id="@android:id/tabhost"-->
+    <!--android:layout_width="fill_parent"-->
+    <!--android:layout_height="wrap_content">-->
+    <!--<LinearLayout-->
+    <!--android:orientation="vertical"-->
+    <!--android:layout_width="fill_parent"-->
+    <!--android:layout_height="wrap_content">-->
+    <!--<TabWidget-->
+    <!--android:layout_weight="0"-->
+    <!--android:orientation="horizontal"-->
+    <!--android:id="@android:id/tabs"-->
+    <!--android:layout_width="fill_parent"-->
+    <!--android:layout_height="wrap_content">-->
 
-            </TabWidget>
-            <FrameLayout
-                android:layout_weight="0"
-                android:id="@android:id/tabcontent"
-                android:layout_width="0dp"
-                android:layout_height="0dp">
+    <!--</TabWidget>-->
+    <!--<FrameLayout-->
+    <!--android:layout_weight="0"-->
+    <!--android:id="@android:id/tabcontent"-->
+    <!--android:layout_width="0dp"-->
+    <!--android:layout_height="0dp">-->
 
-            </FrameLayout>
-            <android.support.v4.view.ViewPager
-                android:id="@+id/viewpager"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom">
+    <!--</FrameLayout>-->
+    <!--<android.support.v4.view.ViewPager-->
+    <!--android:id="@+id/viewpager"-->
+    <!--android:layout_width="fill_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_gravity="bottom">-->
 
-            </android.support.v4.view.ViewPager>
+    <!--</android.support.v4.view.ViewPager>-->
 
-        </LinearLayout>
+    <!--</LinearLayout>-->
 
-    </TabHost>
+    <!--</TabHost>-->
+    <ProgressBar
+        android:id="@+id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
+
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tablayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:theme="@style/Widget.Design.NavigationView"
+        app:tabIndicatorColor="@color/colorAccent"
+        app:tabSelectedTextColor="@color/red"
+        app:tabTextColor="@color/black">
+
+    </android.support.design.widget.TabLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/tablayout"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    </android.support.v4.view.ViewPager>
 
 </RelativeLayout>

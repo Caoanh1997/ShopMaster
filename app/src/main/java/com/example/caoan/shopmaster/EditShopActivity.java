@@ -179,7 +179,7 @@ public class EditShopActivity extends AppCompatActivity {
     }
 
     public void initSpinner(){
-        ArrayAdapter adapter = new ArrayAdapter(EditShopActivity.this,android.R.layout.simple_spinner_item,tinh);
+        /*ArrayAdapter adapter = new ArrayAdapter(EditShopActivity.this,android.R.layout.simple_spinner_item,tinh);
         spinnertinh.setAdapter(adapter);
         spinnertinh.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -233,6 +233,108 @@ public class EditShopActivity extends AppCompatActivity {
                     spinnerhuyen.setTag(huyen);
                     spinnerxa.setAdapter(new ArrayAdapter(EditShopActivity.this,android.R.layout.simple_spinner_item,xa));
                 }else {
+                    spinnerxa.setVisibility(View.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+        spinnerxa.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String xa = String.valueOf(adapterView.getItemAtPosition(i));
+                spinnerxa.setTag(xa);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });*/
+        final ArrayAdapter adapter = new ArrayAdapter(EditShopActivity.this, android.R.layout.simple_spinner_item, tinh);
+        spinnertinh.setAdapter(adapter);
+        spinnertinh.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String tinh = (String) adapterView.getItemAtPosition(i);
+                if (!tinh.equals("Tỉnh/thành phố")) {
+                    spinnerhuyen.setVisibility(View.VISIBLE);
+                    if (tinh.equals("Đà Nẵng")) {
+                        spinnertinh.setTag(tinh);
+                        huyen = getResources().getStringArray(R.array.huyenDN);
+                    } else {
+                        spinnertinh.setTag("Quảng Nam");
+                        huyen = getResources().getStringArray(R.array.huyenQN);
+                    }
+                    spinnerhuyen.setAdapter(new ArrayAdapter(EditShopActivity.this, android.R.layout.simple_spinner_item, huyen));
+                } else {
+                    spinnerhuyen.setVisibility(View.INVISIBLE);
+                    spinnerxa.setVisibility(View.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+        spinnerhuyen.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String huyen = (String) adapterView.getItemAtPosition(i);
+                if (!huyen.equals("Quận/huyện")) {
+                    spinnerxa.setVisibility(View.VISIBLE);
+                    if (huyen.equals("Thanh Khê")) {
+                        xa = getResources().getStringArray(R.array.xaDN1);
+                    }
+                    if (huyen.equals("Liên Chiểu")) {
+                        xa = getResources().getStringArray(R.array.xaDN3);
+                    }
+                    if (huyen.equals("Hải Châu")) {
+                        xa = getResources().getStringArray(R.array.xaDN2);
+                    }
+                    if (huyen.equals("Cẩm Lệ")) {
+                        xa = getResources().getStringArray(R.array.xaDN4);
+                    }
+                    if (huyen.equals("Ngũ Hành Sơn")) {
+                        xa = getResources().getStringArray(R.array.xaDN5);
+                    }
+                    if (huyen.equals("Sơn Trà")) {
+                        xa = getResources().getStringArray(R.array.xaDN6);
+                    }
+                    if (huyen.equals("Hòa Vang")) {
+                        xa = getResources().getStringArray(R.array.xaDN7);
+                    }
+                    if (huyen.equals("Điện Bàn")) {
+                        xa = getResources().getStringArray(R.array.xaQN1);
+                    }
+                    if (huyen.equals("Đại Lộc")) {
+                        xa = getResources().getStringArray(R.array.xaQN2);
+                    }
+                    if (huyen.equals("Duy Xuyên")) {
+                        xa = getResources().getStringArray(R.array.xaQN3);
+                    }
+                    if (huyen.equals("Tam Kỳ")) {
+                        xa = getResources().getStringArray(R.array.xaQN4);
+                    }
+                    if (huyen.equals("Hội An")) {
+                        xa = getResources().getStringArray(R.array.xaQN5);
+                    }
+                    if (huyen.equals("Tiên Phước")) {
+                        xa = getResources().getStringArray(R.array.xaQN6);
+                    }
+                    if (huyen.equals("Quế Sơn")) {
+                        xa = getResources().getStringArray(R.array.xaQN7);
+                    }
+                    if (huyen.equals("Núi Thành")) {
+                        xa = getResources().getStringArray(R.array.xaQN8);
+                    }
+                    spinnerhuyen.setTag(huyen);
+                    spinnerxa.setAdapter(new ArrayAdapter(EditShopActivity.this, android.R.layout.simple_spinner_item, xa));
+                } else {
                     spinnerxa.setVisibility(View.INVISIBLE);
                 }
             }

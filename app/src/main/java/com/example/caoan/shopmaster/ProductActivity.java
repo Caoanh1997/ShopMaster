@@ -4,13 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.TabHost;
 import android.widget.Toast;
 
 import com.example.caoan.shopmaster.Adapter.FragmentAdapter;
@@ -29,7 +28,8 @@ import java.util.List;
 
 public class ProductActivity extends AppCompatActivity {
 
-    private TabHost tabHost;
+    //private TabHost tabHost;
+    private TabLayout tabLayout;
     private ViewPager viewPager;
     private List<Fragment> fragmentList;
     private FragmentAdapter adapter;
@@ -41,20 +41,22 @@ public class ProductActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product);
         viewPager = findViewById(R.id.viewpager);
+        tabLayout = findViewById(R.id.tablayout);
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
-
-        initTabhost();
+        //initTabhost();
         fillFragment();
 
         adapter = new FragmentAdapter(getSupportFragmentManager(),fragmentList);
 
         viewPager.setAdapter(adapter);
         viewPager.setPageTransformer(true,new ZoomOutPageTransformer());
-        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        tabLayout.setupWithViewPager(viewPager);
+        /*viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                tabHost.setCurrentTab(viewPager.getCurrentItem());
+                //tabHost.setCurrentTab(viewPager.getCurrentItem());
+
             }
 
             @Override
@@ -66,14 +68,14 @@ public class ProductActivity extends AppCompatActivity {
             public void onPageScrollStateChanged(int state) {
 
             }
-        });
+        });*/
 
-        tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+        /*tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
             @Override
             public void onTabChanged(String s) {
                 viewPager.setCurrentItem(tabHost.getCurrentTab());
             }
-        });
+        });*/
         Intent intent = getIntent();
         int tab = intent.getIntExtra("tab",0);
         viewPager.setCurrentItem(tab);
@@ -116,7 +118,7 @@ public class ProductActivity extends AppCompatActivity {
         fragmentList.add(drinkFragment);
     }
 
-    private void initTabhost() {
+    /*private void initTabhost() {
         tabHost = findViewById(android.R.id.tabhost);
         tabHost.setup();
 
@@ -136,7 +138,7 @@ public class ProductActivity extends AppCompatActivity {
                         return view;
                     }
                 }));
-    }
+    }*/
 
     @Override
     public void onBackPressed() {

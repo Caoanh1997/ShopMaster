@@ -9,6 +9,7 @@ public class Account {
     private String huyen;
     private String xa;
     private String phone;
+    private String token;
 
     public Account() {
     }
@@ -22,6 +23,26 @@ public class Account {
         this.huyen = huyen;
         this.xa = xa;
         this.phone = phone;
+    }
+
+    public Account(String userID, String name, String email, String address, String tinh, String huyen, String xa, String phone, String token) {
+        this.userID = userID;
+        this.name = name;
+        this.email = email;
+        this.address = address;
+        this.tinh = tinh;
+        this.huyen = huyen;
+        this.xa = xa;
+        this.phone = phone;
+        this.token = token;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public Account(String name, String email, String address, String tinh, String huyen, String xa, String phone) {
