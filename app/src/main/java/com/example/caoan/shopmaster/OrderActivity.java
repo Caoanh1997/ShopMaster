@@ -42,7 +42,7 @@ public class OrderActivity extends AppCompatActivity {
 
         actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle("Confirm");
+        actionBar.setTitle("Chờ xác nhận");
 
         bottomNavigationView = findViewById(R.id.navigation);
         LoadFragment(new ConfirmOrderFragment());
@@ -55,22 +55,22 @@ public class OrderActivity extends AppCompatActivity {
                     case R.id.confirm:
                         fragment = new ConfirmOrderFragment();
                         LoadFragment(fragment);
-                        actionBar.setTitle("Confirm");
+                        actionBar.setTitle("Chờ xác nhận");
                         return true;
                     case R.id.transport:
                         fragment = new TransportOrderFragment();
                         LoadFragment(fragment);
-                        actionBar.setTitle("Transport");
+                        actionBar.setTitle("Đang giao");
                         return true;
                     case R.id.delivered:
                         fragment = new DeliveredOrderFragment();
                         LoadFragment(fragment);
-                        actionBar.setTitle("Delivered");
+                        actionBar.setTitle("Đã giao");
                         return true;
                     case R.id.delete:
                         fragment = new DeleteOrderFragment();
                         LoadFragment(fragment);
-                        actionBar.setTitle("Deleted");
+                        actionBar.setTitle("Đã hủy");
                         return true;
                 }
                 return false;

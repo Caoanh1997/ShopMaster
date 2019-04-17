@@ -125,7 +125,7 @@ public class FoodFragment extends Fragment {
                 final Food food = (Food) adapterView.getItemAtPosition(i);
                 final String key_food = ((Food) adapterView.getItemAtPosition(i)).getKey();
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setTitle("Chọn hàng động");
+                builder.setTitle("Chọn hành động");
                 view = getLayoutInflater().inflate(R.layout.product_action_layout, null);
                 builder.setView(view);
                 final AlertDialog alertDialog = builder.create();

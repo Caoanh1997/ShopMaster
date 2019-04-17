@@ -3,15 +3,15 @@
 
     <item android:id="@+id/confirm"
         android:icon="@drawable/ic_confirm"
-        android:title="Confirm"/>
+        android:title="Chờ xác nhận" />
     <item android:id="@+id/transport"
         android:icon="@drawable/ic_transport"
-        android:title="Transport"/>
+        android:title="Đang giao" />
     <item android:id="@+id/delivered"
         android:icon="@drawable/ic_delivered"
-        android:title="Delivered"/>
+        android:title="Đã giao" />
     <item android:id="@+id/delete"
         android:icon="@drawable/ic_delete"
-        android:title="Delete"/>
+        android:title="Đã hủy" />
 
 </menu>

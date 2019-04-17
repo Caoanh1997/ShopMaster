@@ -124,7 +124,6 @@ public class LoginActivity extends AppCompatActivity {
                 String password = String.valueOf(etpassword.getText());
                 if (CheckOnline()) {
                     if (CheckInput(etemail) && CheckInput(etpassword)) {
-                        //progressDialog.show();
                         btsignin.startAnimation();
                         firebaseAuth.signInWithEmailAndPassword(email, password)
                                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -132,7 +131,6 @@ public class LoginActivity extends AppCompatActivity {
                                     public void onComplete(@NonNull Task<AuthResult> task) {
                                         if (task.isSuccessful()) {
                                             FirebaseUser user = firebaseAuth.getCurrentUser();
-                                            //updateUI(user);
                                             SaveAccountToSharedPreferences(user);
                                             btsignin.dispose();
 
@@ -167,10 +165,9 @@ public class LoginActivity extends AppCompatActivity {
                 String email = String.valueOf(etemail.getText());
                 String password = String.valueOf(etpassword.getText());
                 if (CheckOnline()) {
-
-                    if (CheckInput(etemail) && CheckInput(etpassword) && CheckInput(etname) && CheckInput(etaddress) && CheckInput(etphone) && checkSpinner()) {
+                    if (CheckInput(etemail) && CheckInput(etpassword) && CheckInput(etname)
+                            && CheckInput(etaddress) && CheckInput(etphone) && checkSpinner()) {
                         btsignup.startAnimation();
-                        //progressDialog.show();
                         firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -187,7 +184,7 @@ public class LoginActivity extends AppCompatActivity {
 
                                     Account account = new Account(userID, name, email, address, tinh, huyen, xa, phone);
                                     databaseReference.child(user.getUid()).setValue(account);
-                                    //updateUI(user);
+
                                     SaveAccountToSharedPreferences(user);
                                     btsignup.dispose();
 
