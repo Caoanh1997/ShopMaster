@@ -53,5 +53,8 @@ dependencies {
     implementation 'com.gauravk.bubblenavigation:bubblenavigation:1.0.4'
     implementation 'de.keyboardsurfer.android.widget:crouton:1.8.5@aar'
     implementation 'com.github.arimorty:floatingsearchview:2.1.1'
+    //implementation 'it.sephiroth.android.library.bottomnavigation:bottom-navigation:3.0.0'
+    //implementation 'com.roughike:bottom-bar:2.3.1'
+    //    implementation 'com.tbuonomo:morph-bottom-navigation:1.0.1'
 }
 apply plugin: 'com.google.gms.google-services'

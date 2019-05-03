@@ -1,9 +1,6 @@
 package com.example.caoan.shopmaster.Adapter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -18,9 +15,6 @@ import com.example.caoan.shopmaster.Model.Store;
 import com.example.caoan.shopmaster.R;
 import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;

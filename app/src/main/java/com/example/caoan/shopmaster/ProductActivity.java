@@ -8,9 +8,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.example.caoan.shopmaster.Adapter.FragmentAdapter;
 import com.example.caoan.shopmaster.EventBus.LoadEvent;
@@ -81,7 +78,7 @@ public class ProductActivity extends AppCompatActivity {
         viewPager.setCurrentItem(tab);
     }
 
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu,menu);
         return super.onCreateOptionsMenu(menu);
@@ -104,7 +101,7 @@ public class ProductActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
+    }*/
 
     private void fillFragment() {
         fragmentList = new ArrayList<Fragment>();

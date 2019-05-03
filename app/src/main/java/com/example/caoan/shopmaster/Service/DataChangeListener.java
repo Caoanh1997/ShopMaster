@@ -6,6 +6,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -91,6 +92,8 @@ public class DataChangeListener extends Service {
         builder.setContentTitle("Notification");
         builder.setContentText(message);
         builder.setAutoCancel(true);
+        Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.slow_spring_board);
+        builder.setSound(uri);
 
         Intent intent = new Intent(this, OrderActivity.class);
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
@@ -102,6 +105,26 @@ public class DataChangeListener extends Service {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(1, builder.build());
     }
+    /*public void sendNotification(){
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        builder.setContentTitle("Thông báo");
+        builder.setContentText("Hello");
+        builder.setAutoCancel(true);
+        Uri uri = Uri.parse("android.resource.//"+getPackageName()+"/"+R.raw.slow_spring_board);
+        builder.setSound(uri);
+
+        Intent intent = new Intent(this,CartActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(CartActivity.class);
+        stackBuilder.addNextIntent(intent);
+
+        PendingIntent pendingIntent = stackBuilder.getPendingIntent(0,PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(pendingIntent);
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+        notificationManagerCompat.notify(1,builder.build());
+    }*/
 
     public void getInforUser() {
         SharedPreferences sharedPreferences = getSharedPreferences("Account", Context.MODE_PRIVATE);

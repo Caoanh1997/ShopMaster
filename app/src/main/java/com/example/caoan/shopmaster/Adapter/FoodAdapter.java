@@ -1,9 +1,6 @@
 package com.example.caoan.shopmaster.Adapter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -18,10 +15,10 @@ import com.example.caoan.shopmaster.Model.Food;
 import com.example.caoan.shopmaster.R;
 import com.squareup.picasso.Picasso;
 
-import java.io.InputStream;
-import java.net.URL;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class FoodAdapter extends ArrayAdapter<Food> {
     private List<Food> foodList;
@@ -65,7 +62,6 @@ public class FoodAdapter extends ArrayAdapter<Food> {
         ImageView imageView;
         TextView tvname,tvprice;
     }
-
     private Filter filter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence charSequence) {
@@ -73,18 +69,15 @@ public class FoodAdapter extends ArrayAdapter<Food> {
             FilterResults results = new FilterResults();
             List<Food> suggestions = new ArrayList<>();
             if(charSequence == null || charSequence.length()==0){
-                System.out.println("null");
                 suggestions.addAll(foodList);
-                System.out.println(foodList.size());
             }else {
-                String str = charSequence.toString().toLowerCase().trim();
+                String str = covertString(charSequence.toString().toLowerCase().trim());
                 System.out.println(str);
                 for(Food food : foodList){
-                    if(food.getName().toLowerCase().contains(str)){
+                    if (covertString(food.getName().toLowerCase().trim()).contains(str)) {
                         suggestions.add(food);
                     }
                 }
-                System.out.println(suggestions.size());
             }
             results.values = suggestions;
             results.count = suggestions.size();
@@ -105,6 +98,17 @@ public class FoodAdapter extends ArrayAdapter<Food> {
             return ((Food)resultValue).getName();
         }
     };
+
+    public String covertString(String str) {
+        try {
+            String temp = Normalizer.normalize(str, Normalizer.Form.NFD);
+            Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+            return pattern.matcher(temp).replaceAll("").toLowerCase().replaceAll(" ", "").replaceAll("đ", "d");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
 
     @NonNull
     @Override
